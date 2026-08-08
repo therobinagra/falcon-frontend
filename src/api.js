@@ -1,0 +1,126 @@
+import { products as localProducts } from './data/products'
+
+const API = '/api'
+const TOKEN_KEY = 'falcon-token'
+
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+export function getToken() {
+  return localStorage.getItem(TOKEN_KEY) || ''
+}
+
+export function setToken(token) {
+  if (token) localStorage.setItem(TOKEN_KEY, token)
+  else localStorage.removeItem(TOKEN_KEY)
+}
+
+async function request(path, options = {}) {
+  const token = getToken()
+  const headers = { ...(options.headers || {}) }
+  if (!(options.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json'
+  }
+  if (token) headers['Authorization'] = `Bearer ${token}`
+
+  const res = await fetch(`${API}${path}`, { ...options, headers })
+
+  if (!res.ok) {
+    let message = `Request failed (${res.status})`
+    try {
+      const data = await res.json()
+      if (data.message) message = data.message
+    } catch {
+      // ignore
+    }
+    const error = new Error(message)
+    error.status = res.status
+    throw error
+  }
+
+  return res.status === 204 ? null : res.json()
+}
+
+const fallbackDelay = () => delay(150)
+
+export const getProducts = async (category) => {
+  try {
+    const params = category && category !== 'All Products' ? `?category=${encodeURIComponent(category)}` : ''
+    const data = await request(`/products${params}`)
+    return Array.isArray(data) && data.length > 0 ? data : localProducts
+  } catch {
+    await fallbackDelay()
+    if (!category || category === 'All Products') return localProducts
+    return localProducts.filter((p) => p.category === category)
+  }
+}
+
+export const getProduct = async (id) => {
+  try {
+    const data = await request(`/products/${id}`)
+    if (data && data._id) return data
+    throw new Error('Not found')
+  } catch {
+    await fallbackDelay()
+    return localProducts.find((p) => p._id === id) ?? null
+  }
+}
+
+export const getCategories = async () => {
+  try {
+    const data = await request('/categories')
+    if (Array.isArray(data) && data.length > 0) {
+      return data.map((c) => c.name || c)
+    }
+    return [...new Set(localProducts.map((p) => p.category))]
+  } catch {
+    await fallbackDelay()
+    return [...new Set(localProducts.map((p) => p.category))]
+  }
+}
+
+export const getHealth = async () => {
+  try {
+    return await request('/health')
+  } catch {
+    return { status: 'ok', offline: true }
+  }
+}
+
+export const authApi = {
+  login: (email, password) => request('/users/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  register: (payload) => request('/users/register', { method: 'POST', body: JSON.stringify(payload) }),
+  me: () => request('/users/me'),
+  updateMe: (payload) => request('/users/me', { method: 'PUT', body: JSON.stringify(payload) }),
+}
+
+export const orderApi = {
+  createOrder: (payload) => request('/orders', { method: 'POST', body: JSON.stringify(payload) }),
+  getMyOrders: () => request('/orders/my'),
+}
+
+export const blogApi = {
+  getBlogs: () => request('/blogs'),
+  getBlog: (id) => request(`/blogs/${id}`),
+  createBlog: (payload) => request('/blogs', { method: 'POST', body: JSON.stringify(payload) }),
+  updateBlog: (id, payload) => request(`/blogs/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
+  deleteBlog: (id) => request(`/blogs/${id}`, { method: 'DELETE' }),
+}
+
+export const adminApi = {
+  stats: () => request('/admin/stats'),
+  getProducts: () => request('/products'),
+  createProduct: (payload) => request('/products', { method: 'POST', body: payload }),
+  updateProduct: (id, payload) => request(`/products/${id}`, { method: 'PUT', body: payload }),
+  deleteProduct: (id) => request(`/products/${id}`, { method: 'DELETE' }),
+  getCategories: () => request('/categories'),
+  createCategory: (payload) => request('/categories', { method: 'POST', body: JSON.stringify(payload) }),
+  updateCategory: (id, payload) => request(`/categories/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
+  deleteCategory: (id) => request(`/categories/${id}`, { method: 'DELETE' }),
+  getOrders: () => request('/orders'),
+  getOrder: (id) => request(`/orders/${id}`),
+  updateOrder: (id, payload) => request(`/orders/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
+  deleteOrder: (id) => request(`/orders/${id}`, { method: 'DELETE' }),
+  getUsers: () => request('/users'),
+  updateUser: (id, payload) => request(`/users/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
+  deleteUser: (id) => request(`/users/${id}`, { method: 'DELETE' }),
+}
