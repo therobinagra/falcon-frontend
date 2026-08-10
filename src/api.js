@@ -1,6 +1,6 @@
 import { products as localProducts } from './data/products'
 
-const API = '/api'
+const API = import.meta.env.VITE_API_URL || 'https://falcon-backend-bty7.onrender.com/api'
 const TOKEN_KEY = 'falcon-token'
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
