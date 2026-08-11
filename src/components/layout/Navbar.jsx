@@ -1,6 +1,17 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, ShoppingCart, User, Search, Flame, LogOut } from 'lucide-react'
+import {
+  Menu,
+  X,
+  ShoppingCart,
+  User,
+  Search,
+  Flame,
+  LogOut,
+  ChevronDown,
+  Package,
+  LayoutDashboard,
+} from 'lucide-react'
 import { useCart } from '../../context/cartContext'
 import { useAuth } from '../../context/AuthContext'
 
@@ -8,15 +19,43 @@ const baseLinks = [
   { label: 'Home', to: '/' },
   { label: 'Products', to: '/products' },
   { label: 'Blogs', to: '/blog' },
-  { label: 'Track Order', to: '/track-order' },
 ]
+
+function UserMenuLink({ to, icon: Icon, children, onClick }) {
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      className="flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-ink transition hover:bg-accent-soft hover:text-accent"
+    >
+      <Icon className="h-4 w-4 text-accent" />
+      {children}
+    </Link>
+  )
+}
 
 function Navbar({ onSearchOpen }) {
   const { totalItems, setIsOpen } = useCart()
   const { user, isAdmin, logout } = useAuth()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const userMenuRef = useRef(null)
   const location = useLocation()
+
+  useEffect(() => {
+    setUserMenuOpen(false)
+  }, [location])
+
+  useEffect(() => {
+    const onOutside = (e) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target)) {
+        setUserMenuOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', onOutside)
+    return () => document.removeEventListener('mousedown', onOutside)
+  }, [])
 
   const links = isAdmin ? [...baseLinks, { label: 'Admin', to: '/admin' }] : baseLinks
 
@@ -81,23 +120,66 @@ function Navbar({ onSearchOpen }) {
             <Search className="h-5 w-5" />
           </button>
           {user ? (
-            <>
-              <Link
-                to={isAdmin ? '/admin' : '/products'}
-                aria-label="Account"
-                className="hidden h-11 w-11 items-center justify-center rounded-full bg-accent text-sm font-extrabold text-white shadow-md shadow-accent/25 transition hover:bg-accent-dark sm:flex"
-              >
-                {user.name?.charAt(0)?.toUpperCase() || 'U'}
-              </Link>
+            <div className="relative hidden sm:block" ref={userMenuRef}>
               <button
-                onClick={logout}
-                aria-label="Logout"
-                title="Logout"
-                className={`${iconBtn} hidden sm:flex`}
+                onClick={() => setUserMenuOpen((v) => !v)}
+                aria-label="Account menu"
+                className="flex h-11 items-center gap-1.5 rounded-full bg-accent pl-0.5 pr-3 text-sm font-extrabold text-white shadow-md shadow-accent/25 transition hover:bg-accent-dark"
               >
-                <LogOut className="h-5 w-5" />
+                <span className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15 text-sm font-extrabold">
+                  {user.name?.charAt(0)?.toUpperCase() || 'U'}
+                </span>
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform duration-200 ${
+                    userMenuOpen ? 'rotate-180' : ''
+                  }`}
+                />
               </button>
-            </>
+
+              {userMenuOpen && (
+                <div className="absolute right-0 top-full z-50 mt-2 w-64 overflow-hidden rounded-2xl border border-line bg-white shadow-lux">
+                  <div className="border-b border-line bg-surface/60 px-4 py-3.5">
+                    <p className="truncate text-sm font-extrabold text-ink">{user.name}</p>
+                    <p className="truncate text-xs text-mist">{user.email}</p>
+                  </div>
+                  <div className="p-2">
+                    <UserMenuLink
+                      to="/track-order"
+                      icon={Package}
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      My Orders
+                    </UserMenuLink>
+                    <UserMenuLink
+                      to="/profile"
+                      icon={User}
+                      onClick={() => setUserMenuOpen(false)}
+                    >
+                      Profile
+                    </UserMenuLink>
+                    {isAdmin && (
+                      <UserMenuLink
+                        to="/admin"
+                        icon={LayoutDashboard}
+                        onClick={() => setUserMenuOpen(false)}
+                      >
+                        Dashboard
+                      </UserMenuLink>
+                    )}
+                    <button
+                      onClick={() => {
+                        setUserMenuOpen(false)
+                        logout()
+                      }}
+                      className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-600 transition hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             <Link to="/login" aria-label="Login" className={`${iconBtn} hidden sm:flex`}>
               <User className="h-5 w-5" />
@@ -150,16 +232,34 @@ function Navbar({ onSearchOpen }) {
             </li>
             <li className="border-t border-line pt-2">
               {user ? (
-                <button
-                  onClick={() => {
-                    setMenuOpen(false)
-                    logout()
-                  }}
-                  className="flex w-full items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold text-red-600 transition hover:bg-red-50"
-                >
-                  <LogOut className="h-5 w-5" />
-                  Logout ({user.name})
-                </button>
+                <div>
+                  <p className="px-4 pb-1 text-[11px] font-bold uppercase tracking-widest text-mist">
+                    {user.email}
+                  </p>
+                  <div className="space-y-1">
+                    <UserMenuLink to="/track-order" icon={Package} onClick={() => setMenuOpen(false)}>
+                      My Orders
+                    </UserMenuLink>
+                    <UserMenuLink to="/profile" icon={User} onClick={() => setMenuOpen(false)}>
+                      Profile
+                    </UserMenuLink>
+                    {isAdmin && (
+                      <UserMenuLink to="/admin" icon={LayoutDashboard} onClick={() => setMenuOpen(false)}>
+                        Dashboard
+                      </UserMenuLink>
+                    )}
+                    <button
+                      onClick={() => {
+                        setMenuOpen(false)
+                        logout()
+                      }}
+                      className="flex w-full items-center gap-3 rounded-xl px-4 py-3 text-sm font-bold text-red-600 transition hover:bg-red-50"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Logout ({user.name})
+                    </button>
+                  </div>
+                </div>
               ) : (
                 <Link
                   to="/login"
