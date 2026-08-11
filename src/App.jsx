@@ -11,6 +11,7 @@ import Blog from './pages/Blog'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Checkout from './pages/Checkout'
+import TrackOrder from './pages/TrackOrder'
 import AdminLayout from './admin/AdminLayout'
 import AdminLogin from './admin/AdminLogin'
 import Dashboard from './admin/Dashboard'
@@ -41,6 +42,7 @@ function App() {
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/checkout" element={<Checkout />} />
+                <Route path="/track-order" element={<TrackOrder />} />
               </Route>
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/admin" element={<AdminLayout />}>

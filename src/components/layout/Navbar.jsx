@@ -8,6 +8,7 @@ const baseLinks = [
   { label: 'Home', to: '/' },
   { label: 'Products', to: '/products' },
   { label: 'Blogs', to: '/blog' },
+  { label: 'Track Order', to: '/track-order' },
 ]
 
 function Navbar({ onSearchOpen }) {

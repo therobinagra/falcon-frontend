@@ -96,6 +96,8 @@ export const authApi = {
 export const orderApi = {
   createOrder: (payload) => request('/orders', { method: 'POST', body: JSON.stringify(payload) }),
   getMyOrders: () => request('/orders/my'),
+  trackOrder: (id, phone) =>
+    request(`/orders/track?id=${encodeURIComponent(id)}&phone=${encodeURIComponent(phone)}`),
 }
 
 export const blogApi = {

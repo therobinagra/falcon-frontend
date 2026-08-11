@@ -4,11 +4,11 @@ import { Link } from 'react-router-dom'
 const columns = [
   {
     title: 'Company',
-    links: ['About Us', 'Careers', 'Blog', 'Press Kit', 'Affiliates'],
+    links: ['About Us', 'Careers', 'Blog'],
   },
   {
     title: 'Products',
-    links: ['Extend Range', 'Supplements', 'Condoms & Lubes', 'Intimate Care', 'Shilajit'],
+    links: ['Supplements', 'Shilajit'],
   },
   {
     title: 'Support',
@@ -83,6 +83,12 @@ function Footer() {
                   link === 'Contact Us' ? (
                     <li key={link}>
                       <Link to="/contact" className="transition hover:text-accent">
+                        {link}
+                      </Link>
+                    </li>
+                  ) : link === 'Track Order' ? (
+                    <li key={link}>
+                      <Link to="/track-order" className="transition hover:text-accent">
                         {link}
                       </Link>
                     </li>

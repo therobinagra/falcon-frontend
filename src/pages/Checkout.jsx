@@ -188,6 +188,12 @@ function Checkout() {
 
               <div className="flex flex-col gap-3 pt-2">
                 <Link
+                  to="/track-order"
+                  className="flex items-center justify-center gap-2 rounded-xl border-2 border-accent px-4 py-3.5 text-sm font-bold text-accent transition hover:bg-accent hover:text-white"
+                >
+                  <Truck className="h-4 w-4" /> Track your order
+                </Link>
+                <Link
                   to="/products"
                   className="flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-md shadow-accent/20 transition hover:bg-accent-dark"
                 >
