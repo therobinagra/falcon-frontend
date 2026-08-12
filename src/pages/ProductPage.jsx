@@ -67,9 +67,13 @@ function ProductPage() {
 
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100)
   const wished = wishlist.includes(product._id)
-  const related = allProducts
-    .filter((p) => p.category === product.category && p._id !== product._id)
-    .slice(0, 4)
+  const related = product.related?.length
+    ? product.related
+        .map((slug) => allProducts.find((p) => p.slug === slug))
+        .filter(Boolean)
+    : allProducts
+        .filter((p) => p.category === product.category && p._id !== product._id)
+        .slice(0, 4)
 
   const perks = [
     { icon: Truck, label: 'Free delivery over ₹499' },
