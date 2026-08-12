@@ -1,4 +1,4 @@
-import { Flame, Heart } from 'lucide-react'
+import { Heart } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const routes = {
@@ -56,9 +56,11 @@ function Footer() {
         <div className="grid gap-12 lg:grid-cols-6">
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2">
-              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent shadow-lg shadow-accent/25">
-                <Flame className="h-5 w-5 text-white" />
-              </span>
+              <img
+                src="/images/logo.jpg"
+                alt="FalconCare"
+                className="h-10 w-10 rounded-xl object-cover shadow-md shadow-accent/20"
+              />
               <span className="text-xl font-extrabold tracking-tight text-ink">
                 Falcon<span className="text-accent">Care</span>
               </span>

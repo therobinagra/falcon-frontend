@@ -6,7 +6,6 @@ import {
   ShoppingCart,
   User,
   Search,
-  Flame,
   LogOut,
   ChevronDown,
   Package,
@@ -81,9 +80,11 @@ function Navbar({ onSearchOpen }) {
     >
       <nav className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2" aria-label="FalconCare home">
-          <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent text-white shadow-lg shadow-accent/25">
-            <Flame className="h-5 w-5" />
-          </span>
+          <img
+            src="/images/logo.jpg"
+            alt="FalconCare"
+            className="h-11 w-11 rounded-xl object-cover shadow-md shadow-accent/20"
+          />
           <span className="text-xl font-extrabold tracking-tight text-ink">
             Falcon<span className="text-accent">Care</span>
           </span>
