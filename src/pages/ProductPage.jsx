@@ -15,7 +15,6 @@ import {
 import { getProducts } from '../api'
 import { useCart } from '../context/cartContext'
 import { formatINR } from '../utils'
-import ProductCard from '../components/products/ProductCard'
 import QuickViewModal from '../components/products/QuickViewModal'
 import FadeIn from '../components/ui/FadeIn'
 
@@ -23,7 +22,6 @@ function ProductPage() {
   const { id } = useParams()
   const { addItem, wishlist, toggleWishlist } = useCart()
   const [product, setProduct] = useState(null)
-  const [allProducts, setAllProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [qty, setQty] = useState(1)
   const [quickView, setQuickView] = useState(null)
@@ -31,7 +29,6 @@ function ProductPage() {
   useEffect(() => {
     getProducts()
       .then((data) => {
-        setAllProducts(data)
         setProduct(data.find((p) => p._id === id) ?? null)
       })
       .catch(() => setProduct(null))
@@ -67,13 +64,6 @@ function ProductPage() {
 
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100)
   const wished = wishlist.includes(product._id)
-  const related = product.related?.length
-    ? product.related
-        .map((slug) => allProducts.find((p) => p.slug === slug))
-        .filter(Boolean)
-    : allProducts
-        .filter((p) => p.category === product.category && p._id !== product._id)
-        .slice(0, 4)
 
   const perks = [
     { icon: Truck, label: 'Free delivery over ₹499' },
@@ -209,24 +199,6 @@ function ProductPage() {
             </div>
           </FadeIn>
         </div>
-
-        {related.length > 0 && (
-          <div className="mt-20">
-            <FadeIn className="flex flex-col gap-2">
-              <h2 className="text-2xl font-extrabold text-ink sm:text-3xl">
-                You may also like
-              </h2>
-              <p className="text-mist">More from the {product.category} range.</p>
-            </FadeIn>
-            <div className="mt-8 grid grid-cols-2 gap-5 lg:grid-cols-4">
-              {related.map((p, i) => (
-                <FadeIn key={p._id} delay={0.06 * i}>
-                  <ProductCard product={p} onQuickView={setQuickView} />
-                </FadeIn>
-              ))}
-            </div>
-          </div>
-        )}
       </div>
 
       <QuickViewModal product={quickView} onClose={() => setQuickView(null)} />
