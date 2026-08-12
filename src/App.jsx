@@ -5,6 +5,7 @@ import { AuthProvider } from './context/AuthContext'
 import Layout from './components/layout/Layout'
 import ScrollToTop from './components/ui/ScrollToTop'
 import Home from './pages/Home'
+import About from './pages/About'
 import Products from './pages/Products'
 import ProductPage from './pages/ProductPage'
 import Blog from './pages/Blog'
@@ -42,6 +43,7 @@ function App() {
             <Routes>
               <Route element={<Layout />}>
                 <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/product/:id" element={<ProductPage />} />
                 <Route path="/blog" element={<Blog />} />

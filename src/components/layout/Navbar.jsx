@@ -17,6 +17,7 @@ import { useAuth } from '../../context/AuthContext'
 
 const baseLinks = [
   { label: 'Home', to: '/' },
+  { label: 'About Us', to: '/about' },
   { label: 'Products', to: '/products' },
   { label: 'Blogs', to: '/blog' },
 ]

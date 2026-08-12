@@ -2,6 +2,7 @@ import { Flame, Heart } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const routes = {
+  'About Us': '/about',
   'Track Order': '/track-order',
   'Shipping Policy': '/shipping-policy',
   'Contact Us': '/contact',
