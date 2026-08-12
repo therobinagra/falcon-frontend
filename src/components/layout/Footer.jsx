@@ -7,6 +7,7 @@ const routes = {
   'Contact Us': '/contact',
   'Privacy Policy': '/privacy-policy',
   'No Return & No Refund Policy': '/returns-refunds',
+  'Terms and Conditions': '/terms-conditions',
 }
 
 const columns = [
@@ -20,11 +21,11 @@ const columns = [
   },
   {
     title: 'Support',
-    links: ['Help Center', 'Track Order', 'Shipping Policy', 'Contact Us'],
+    links: ['Help Center', 'Track Order', 'Contact Us'],
   },
   {
     title: 'Policies',
-    links: ['Privacy Policy', 'No Return & No Refund Policy', 'Terms of Service', 'Medical Disclaimer', 'Cookie Policy'],
+    links: ['Privacy Policy', 'No Return & No Refund Policy', 'Shipping Policy', 'Terms and Conditions'],
   },
 ]
 
@@ -91,12 +92,6 @@ function Footer() {
                   routes[link] ? (
                     <li key={link}>
                       <Link to={routes[link]} className="transition hover:text-accent">
-                        {link}
-                      </Link>
-                    </li>
-                  ) : link === 'Track Order' ? (
-                    <li key={link}>
-                      <Link to="/track-order" className="transition hover:text-accent">
                         {link}
                       </Link>
                     </li>

@@ -15,6 +15,7 @@ import TrackOrder from './pages/TrackOrder'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import ReturnsPolicy from './pages/ReturnsPolicy'
 import ShippingPolicy from './pages/ShippingPolicy'
+import TermsConditions from './pages/TermsConditions'
 import Profile from './pages/Profile'
 import MyOrders from './pages/MyOrders'
 import AdminLayout from './admin/AdminLayout'
@@ -51,6 +52,7 @@ function App() {
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/returns-refunds" element={<ReturnsPolicy />} />
                 <Route path="/shipping-policy" element={<ShippingPolicy />} />
+                <Route path="/terms-conditions" element={<TermsConditions />} />
                 <Route path="/my-orders" element={<MyOrders />} />
                 <Route path="/profile" element={<Profile />} />
               </Route>
