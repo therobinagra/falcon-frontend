@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Truck,
   User as UserIcon,
+  Copy,
 } from 'lucide-react'
 import { useCart } from '../context/cartContext'
 import { useAuth } from '../context/AuthContext'
@@ -163,7 +164,17 @@ function Checkout() {
               <div className="rounded-2xl border border-dashed border-accent/40 bg-accent-soft/60 px-5 py-4 text-center">
                 <p className="text-xs font-bold uppercase tracking-widest text-accent">Order ID</p>
                 <p className="mt-1 break-all font-mono text-sm font-bold text-ink">#{placed._id}</p>
+                <button
+                  onClick={() => navigator.clipboard?.writeText(placed._id)}
+                  className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-accent/40 px-3 py-1 text-xs font-bold text-accent transition hover:bg-accent hover:text-white"
+                >
+                  <Copy className="h-3.5 w-3.5" /> Copy ID
+                </button>
               </div>
+              <p className="rounded-xl bg-surface px-4 py-3 text-center text-xs text-mist">
+                Save this ID — or just use your phone number on the Track Order page to find your
+                order anytime.
+              </p>
 
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between text-mist">

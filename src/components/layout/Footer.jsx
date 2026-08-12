@@ -1,6 +1,14 @@
 import { Flame, Heart } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
+const routes = {
+  'Track Order': '/track-order',
+  'Shipping Policy': '/shipping-policy',
+  'Contact Us': '/contact',
+  'Privacy Policy': '/privacy-policy',
+  'No Return & No Refund Policy': '/returns-refunds',
+}
+
 const columns = [
   {
     title: 'Company',
@@ -16,7 +24,7 @@ const columns = [
   },
   {
     title: 'Policies',
-    links: ['Privacy Policy', 'Terms of Service', 'Medical Disclaimer', 'Cookie Policy'],
+    links: ['Privacy Policy', 'No Return & No Refund Policy', 'Terms of Service', 'Medical Disclaimer', 'Cookie Policy'],
   },
 ]
 
@@ -80,9 +88,9 @@ function Footer() {
               </h4>
               <ul className="mt-5 space-y-3 text-sm text-mist">
                 {column.links.map((link) =>
-                  link === 'Contact Us' ? (
+                  routes[link] ? (
                     <li key={link}>
-                      <Link to="/contact" className="transition hover:text-accent">
+                      <Link to={routes[link]} className="transition hover:text-accent">
                         {link}
                       </Link>
                     </li>
