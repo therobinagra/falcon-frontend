@@ -60,11 +60,11 @@ function Articles() {
                 <p className="mt-2.5 text-sm leading-relaxed text-mist">{article.desc}</p>
 
                 <Link
-                  to="/blog"
-                  className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-accent"
+                  to={`/blog/${article.id}`}
+                  className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-accent transition group-hover:gap-3"
                 >
                   Read More
-                  <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1.5" />
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
             </article>

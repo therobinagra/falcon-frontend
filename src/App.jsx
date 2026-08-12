@@ -9,6 +9,7 @@ import About from './pages/About'
 import Products from './pages/Products'
 import ProductPage from './pages/ProductPage'
 import Blog from './pages/Blog'
+import BlogDetail from './pages/BlogDetail'
 import Contact from './pages/Contact'
 import Login from './pages/Login'
 import Checkout from './pages/Checkout'
@@ -47,6 +48,7 @@ function App() {
                 <Route path="/products" element={<Products />} />
                 <Route path="/product/:id" element={<ProductPage />} />
                 <Route path="/blog" element={<Blog />} />
+                <Route path="/blog/:id" element={<BlogDetail />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/checkout" element={<Checkout />} />

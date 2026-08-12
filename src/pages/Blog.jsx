@@ -82,10 +82,13 @@ function Blog() {
                     {article.body}
                   </p>
 
-                  <button className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-accent">
+                  <Link
+                    to={`/blog/${article._id || article.id}`}
+                    className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-accent transition group-hover:gap-3"
+                  >
                     Read More
-                    <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1.5" />
-                  </button>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </div>
               </article>
             </FadeIn>
