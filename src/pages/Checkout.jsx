@@ -6,15 +6,20 @@ import {
   ArrowRight,
   Banknote,
   CheckCircle2,
+  ChevronDown,
   CreditCard,
+  FileText,
+  Landmark,
   Lock,
   Mail,
   MapPin,
   Phone,
   ShieldCheck,
+  Smartphone,
   Truck,
   User as UserIcon,
   Copy,
+  Wallet,
 } from 'lucide-react'
 import { useCart } from '../context/cartContext'
 import { useAuth } from '../context/AuthContext'
@@ -40,6 +45,49 @@ function Field({ icon: Icon, label, ...props }) {
 
 const FREE_SHIPPING_OVER = 499
 const SHIPPING_FEE = 49
+
+const payMethods = [
+  {
+    icon: Landmark,
+    title: 'Net Banking / Credit / Debit Cards',
+    desc: 'Pay online instantly through credit/debit cards such as Mastercard, Visa and Rupay cards, and Netbanking by SBI, HDFC, ICICI, PNB, KOTAK, Andhra Bank and others.',
+  },
+  {
+    icon: Wallet,
+    title: 'Razorpay / Paytm',
+    desc: 'Pay online instantly through the Razorpay and Paytm payment gateways.',
+  },
+  {
+    icon: Smartphone,
+    title: 'UPI & Wallets',
+    desc: 'Google Pay, PhonePe, Cred, Amazon Pay, BHIM UPI, Paytm wallet, Paytm Payments Bank, Paytm Rupay card, Mobikwik, Ola Money, JioMoney, Freecharge, PayZapp and more.',
+  },
+  {
+    icon: CreditCard,
+    title: 'Visa / Master / Rupay Cards & Wallets',
+    desc: 'Pay online instantly through Mastercard, Visa and Rupay credit/debit cards issued by SBI, ICICI Bank, HDFC Bank, Axis Bank, DB, KYB, Corp Bank, IOB, Kotak etc.',
+  },
+  {
+    icon: FileText,
+    title: 'Personal Cheque / Bank Draft',
+    desc: 'It takes about seven days for your cheque/draft to reach us by post. To speed up the process, you may use express mail service. We dispatch your orders on receipt of the cheque/draft. Please note that we do not accept international cheque/draft/MO.',
+  },
+]
+
+const payChips = [
+  'Mastercard',
+  'Visa',
+  'Rupay',
+  'Netbanking',
+  'Razorpay',
+  'Paytm',
+  'Google Pay',
+  'PhonePe',
+  'UPI',
+  'BHIM',
+  'Wallets',
+  'Cheque / Draft',
+]
 
 function SummaryItem({ item }) {
   return (
@@ -75,6 +123,7 @@ function Checkout() {
   const [placed, setPlaced] = useState(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
+  const [showPayInfo, setShowPayInfo] = useState(false)
   const [form, setForm] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -341,6 +390,74 @@ function Checkout() {
                   <Lock className="mt-0.5 h-4 w-4 shrink-0" />
                   Online payment is simulated in this demo. No money will be deducted.
                 </p>
+              )}
+
+              <button
+                type="button"
+                onClick={() => setShowPayInfo((v) => !v)}
+                className="mt-5 flex w-full items-center justify-between rounded-2xl border border-line bg-surface px-5 py-4 text-left transition hover:border-accent/40"
+              >
+                <span className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent-soft text-accent">
+                    <Wallet className="h-5 w-5" />
+                  </span>
+                  <span>
+                    <span className="block text-sm font-extrabold text-ink">How to Pay</span>
+                    <span className="block text-xs text-mist">
+                      All accepted payment options &amp; details
+                    </span>
+                  </span>
+                </span>
+                <ChevronDown
+                  className={`h-5 w-5 text-mist transition-transform duration-200 ${
+                    showPayInfo ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+
+              {showPayInfo && (
+                <div className="mt-3 overflow-hidden rounded-2xl border border-line bg-surface">
+                  <div className="flex flex-wrap gap-2 border-b border-line bg-white px-4 py-3">
+                    {payChips.map((chip) => (
+                      <span
+                        key={chip}
+                        className="rounded-full bg-accent-soft px-3 py-1 text-[11px] font-bold text-accent"
+                      >
+                        {chip}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="divide-y divide-line">
+                    {payMethods.map((method) => {
+                      const Icon = method.icon
+                      return (
+                        <div key={method.title} className="flex items-start gap-3 px-4 py-4">
+                          <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-accent shadow-sm">
+                            <Icon className="h-4 w-4" />
+                          </span>
+                          <div>
+                            <p className="text-sm font-extrabold text-ink">{method.title}</p>
+                            <p className="mt-1 text-xs leading-relaxed text-mist">{method.desc}</p>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                  <div className="border-t border-line bg-accent-soft/50 px-5 py-4 text-xs leading-relaxed text-mist">
+                    <p className="font-extrabold uppercase tracking-widest text-accent">
+                      For cheque / draft payments
+                    </p>
+                    <p className="mt-2">
+                      Personal cheque or bank draft should be made in the name of{' '}
+                      <span className="font-bold text-ink">"Falcon Ayurveda"</span>, and sent to:
+                    </p>
+                    <p className="mt-2 font-bold text-ink">
+                      Falcon Ayurveda Pvt. Ltd.
+                      <br />
+                      Shanti nagar, Professor colony Kamla nagar Agra-283205
+                    </p>
+                  </div>
+                </div>
               )}
             </section>
           </div>
