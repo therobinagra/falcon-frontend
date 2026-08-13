@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, MessageCircle, ShieldCheck, Truck, RotateCcw } from 'lucide-react'
+import { Plus, MessageCircle, ShieldCheck, Truck } from 'lucide-react'
 import FadeIn from '../ui/FadeIn'
 
 const FAQS = [
@@ -20,14 +20,6 @@ const FAQS = [
     a: 'No. You can order without a prescription. However, our in-house doctors review your order and may follow up if any product needs a quick check-in for your safety.',
   },
   {
-    q: 'How do I use delay spray or gel?',
-    a: 'Apply 2–3 sprays (or a pea-sized amount of gel) 10–15 minutes before intimacy and gently rub it in. Wait for it to dry for the best effect. Start with less and adjust as needed.',
-  },
-  {
-    q: 'Can I return or exchange a product?',
-    a: 'For hygiene reasons, opened or used intimacy products cannot be returned. If your order arrives damaged or with the wrong items, reach out within 48 hours and we will replace it free of cost.',
-  },
-  {
     q: 'Is COD available?',
     a: 'Yes, Cash on Delivery is available across India on orders up to ₹5,000. UPI, cards and net banking are also supported at checkout.',
   },
@@ -44,7 +36,6 @@ function FaqSection() {
     { icon: MessageCircle, title: 'Chat with us', desc: 'Live support, 9 AM – 11 PM' },
     { icon: Truck, title: 'Free delivery', desc: 'On all orders above ₹499' },
     { icon: ShieldCheck, title: 'Discreet packaging', desc: 'Plain, unmarked box always' },
-    { icon: RotateCcw, title: 'Easy replacements', desc: 'Damaged items replaced free' },
   ]
 
   return (

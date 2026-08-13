@@ -35,14 +35,6 @@ const testimonials = [
     rating: 5,
     text: 'Ordered on Monday, delivered Tuesday. The delay spray genuinely works and the discreet box made me feel completely at ease. Will order again for sure.',
   },
-  {
-    name: 'Arjun Nair',
-    role: 'Verified Customer · Kochi',
-    initials: 'AN',
-    color: 'from-rose-500 to-red-400',
-    rating: 5,
-    text: 'Tried the Surge + Alpha combo. Solid results in two weeks, zero side effects. The 24/7 chat support answered all my doubts. Worth every rupee.',
-  },
 ]
 
 const AUTOPLAY_MS = 6000
