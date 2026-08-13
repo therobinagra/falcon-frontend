@@ -5,7 +5,7 @@ import { Quote, BadgeCheck, Star, ChevronLeft, ChevronRight } from 'lucide-react
 const testimonials = [
   {
     name: 'Rohit Sharma',
-    role: 'Verified Customer · Mumbai',
+    role: 'Verified Customer · Agra',
     initials: 'RS',
     color: 'from-amber-500 to-orange-400',
     rating: 5,

@@ -4,7 +4,7 @@ const emojiMap = [
   { match: /condom/i, icon: '🛡️' },
   { match: /shilajit/i, icon: '⚡' },
   { match: /pack|combo/i, icon: '🚀' },
-  { match: /forever|stamina|supplement/i, icon: '🌿' },
+  { match: /forever|stamina|capsule|oil|churan/i, icon: '🌿' },
 ]
 
 export function productIcon(name) {

@@ -1,4 +1,4 @@
-import { Heart } from 'lucide-react'
+import { Heart, Phone } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const routes = {
@@ -14,11 +14,11 @@ const routes = {
 const columns = [
   {
     title: 'Company',
-    links: ['About Us', 'Careers', 'Blog'],
+    links: ['About Us', 'Blog'],
   },
   {
     title: 'Products',
-    links: ['Supplements', 'Shilajit'],
+    links: ['Capsule', 'Oil', 'Churana', 'Shilajit'],
   },
   {
     title: 'Support',
@@ -68,6 +68,12 @@ function Footer() {
             <p className="mt-5 max-w-sm text-sm leading-relaxed text-mist">
               India&apos;s premium men&apos;s wellness brand. Doctor-approved products for
               performance, stamina and confidence — delivered discreetly.
+            </p>
+            <p className="mt-4 flex items-center gap-2 text-sm text-mist">
+              <Phone className="h-4 w-4 text-accent" />
+              <a href="tel:+919412870756" className="transition hover:text-accent">
+                +91 94128 70756
+              </a>
             </p>
             <div className="mt-6 flex gap-3">
               {socials.map((social) => (

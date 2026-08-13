@@ -188,7 +188,7 @@ function AdminCategories() {
             required
             value={modal?.form.name || ''}
             onChange={(e) => set('name', e.target.value)}
-            placeholder="e.g. Bold Supplements"
+            placeholder="e.g. Capsule"
           />
           <Textarea
             label="Description"

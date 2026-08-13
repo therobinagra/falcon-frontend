@@ -13,7 +13,7 @@ const banners = [
   },
   {
     image: '/images/banner2.jpg',
-    eyebrow: 'Clinically Dosed Supplements',
+    eyebrow: 'Clinically Dosed Capsules & Oils',
     title: 'Build real stamina, naturally.',
     sub: 'Ashwagandha, Shilajit and more — backed by science and trusted by 1,00,000+ men.',
     cta: 'Explore Range',

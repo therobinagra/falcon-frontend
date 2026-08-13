@@ -7,7 +7,7 @@ const videos = [
   {
     id: 'r1',
     name: 'Rohit S.',
-    role: 'Verified Brother · Mumbai',
+    role: 'Verified Brother · Agra',
     poster: '/images/video-1.jpg',
     srcs: [
       'https://www.w3schools.com/html/mov_bbb.mp4',

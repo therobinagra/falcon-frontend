@@ -13,8 +13,8 @@ const contactInfo = [
   {
     icon: Phone,
     title: 'Call Us',
-    value: '+91 1800 123 4567',
-    sub: 'Toll-free, 7 days a week',
+    value: '+91 94128 70756',
+    sub: '7 days a week',
     color: 'from-sky-500 to-indigo-400',
   },
   {
@@ -36,8 +36,8 @@ const details = [
   {
     icon: Phone,
     label: 'Phone Number',
-    value: '+91 1800 123 4567',
-    href: 'tel:+9118001234567',
+    value: '+91 94128 70756',
+    href: 'tel:+919412870756',
   },
   {
     icon: Clock,
@@ -48,7 +48,7 @@ const details = [
   {
     icon: MapPin,
     label: 'Head Office',
-    value: '4th Floor, Falcon Wellness Tower, Andheri East, Mumbai, Maharashtra 400069',
+    value: 'Shanti Nagar, Professor Colony, Kamla Nagar, Agra, Uttar Pradesh 283205',
     href: null,
   },
 ]
@@ -261,7 +261,7 @@ function Contact() {
             <div className="mt-8 overflow-hidden rounded-3xl border border-line bg-white shadow-lux">
               <iframe
                 title="FalconCare office location"
-                src="https://www.google.com/maps?q=Andheri+East,+Mumbai,+Maharashtra&output=embed"
+                src="https://www.google.com/maps?q=Kamla+Nagar,+Agra,+Uttar+Pradesh&output=embed"
                 className="h-56 w-full"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
@@ -269,7 +269,7 @@ function Contact() {
               <div className="flex items-center gap-3 border-t border-line p-5">
                 <MessageCircleHeart className="h-5 w-5 shrink-0 text-accent" />
                 <p className="text-sm text-mist">
-                  Drop by our Mumbai head office, or reach us online — we&apos;re happy to help.
+                  Drop by our Agra head office, or reach us online — we&apos;re happy to help.
                 </p>
               </div>
             </div>
