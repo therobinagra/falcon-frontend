@@ -69,7 +69,7 @@ function Contact() {
       await leadApi.submit(form)
       setSent(true)
     } catch {
-      setSent(true)
+      alert('Failed to send message. Please try again.')
     } finally {
       setLoading(false)
     }
