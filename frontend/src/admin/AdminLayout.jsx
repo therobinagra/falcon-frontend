@@ -6,6 +6,7 @@ import {
   Users,
   Tags,
   Newspaper,
+  Mail,
   ExternalLink,
   LogOut,
   Flame,
@@ -19,6 +20,7 @@ const navItems = [
   { to: '/admin/users', label: 'Users', icon: Users },
   { to: '/admin/categories', label: 'Categories', icon: Tags },
   { to: '/admin/blogs', label: 'Blog Posts', icon: Newspaper },
+  { to: '/admin/leads', label: 'Leads', icon: Mail },
 ]
 
 function AdminLayout() {

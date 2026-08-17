@@ -129,3 +129,10 @@ export const adminApi = {
   updateUser: (id, payload) => request(`/users/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
   deleteUser: (id) => request(`/users/${id}`, { method: 'DELETE' }),
 }
+
+export const leadApi = {
+  submit: (payload) => request('/leads', { method: 'POST', body: JSON.stringify(payload) }),
+  getAll: () => request('/leads'),
+  updateStatus: (id, status) => request(`/leads/${id}`, { method: 'PUT', body: JSON.stringify({ status }) }),
+  delete: (id) => request(`/leads/${id}`, { method: 'DELETE' }),
+}

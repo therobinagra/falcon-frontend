@@ -5,6 +5,7 @@ import {
   ShoppingBag,
   Users,
   Tags,
+  Mail,
   IndianRupee,
   TrendingUp,
   ArrowUpRight,
@@ -59,7 +60,7 @@ function Dashboard() {
     { label: 'Total Products', value: stats.counts.products, icon: Package, to: '/admin/products', tone: 'text-accent bg-accent-soft' },
     { label: 'Total Orders', value: stats.counts.orders, icon: ShoppingBag, to: '/admin/orders', tone: 'text-sky-600 bg-sky-50' },
     { label: 'Total Users', value: stats.counts.users, icon: Users, to: '/admin/users', tone: 'text-amber-600 bg-amber-50' },
-    { label: 'Categories', value: stats.counts.categories, icon: Tags, to: '/admin/categories', tone: 'text-rose-600 bg-rose-50' },
+    { label: 'Total Leads', value: stats.counts.leads ?? 0, icon: Mail, to: '/admin/leads', tone: 'text-green-600 bg-green-50' },
   ]
 
   return (

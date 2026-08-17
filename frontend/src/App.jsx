@@ -28,6 +28,7 @@ import AdminOrders from './admin/AdminOrders'
 import AdminUsers from './admin/AdminUsers'
 import AdminCategories from './admin/AdminCategories'
 import AdminBlogs from './admin/AdminBlogs'
+import AdminLeads from './admin/AdminLeads'
 
 function App() {
   return (
@@ -68,6 +69,7 @@ function App() {
                 <Route path="users" element={<AdminUsers />} />
                 <Route path="categories" element={<AdminCategories />} />
                 <Route path="blogs" element={<AdminBlogs />} />
+                <Route path="leads" element={<AdminLeads />} />
               </Route>
             </Routes>
           </BrowserRouter>

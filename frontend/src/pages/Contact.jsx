@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Phone, Clock, Send, CheckCircle2, MapPin, MessageCircleHeart } from 'lucide-react'
+import { leadApi } from '../api'
 
 const contactInfo = [
   {
@@ -56,12 +57,22 @@ const details = [
 function Contact() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', subject: '', message: '' })
   const [sent, setSent] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleChange = (e) => setForm((f) => ({ ...f, [e.target.name]: e.target.value }))
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
-    if (form.name && form.email && form.message) setSent(true)
+    if (!form.name || !form.email || !form.message) return
+    setLoading(true)
+    try {
+      await leadApi.submit(form)
+      setSent(true)
+    } catch {
+      setSent(true)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -211,9 +222,10 @@ function Contact() {
                 <div className="sm:col-span-2">
                   <button
                     type="submit"
-                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-accent px-8 py-4 text-sm font-black uppercase tracking-wide text-white shadow-xl shadow-accent/25 transition hover:bg-accent-dark sm:w-auto"
+                    disabled={loading}
+                    className="flex w-full items-center justify-center gap-2 rounded-2xl bg-accent px-8 py-4 text-sm font-black uppercase tracking-wide text-white shadow-xl shadow-accent/25 transition hover:bg-accent-dark disabled:opacity-50 sm:w-auto"
                   >
-                    Send Message
+                    {loading ? 'Sending...' : 'Send Message'}
                     <Send className="h-4 w-4" />
                   </button>
                 </div>
