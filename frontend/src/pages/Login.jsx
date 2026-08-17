@@ -191,16 +191,7 @@ function Login() {
           </form>
         </div>
 
-        <div className="mt-6 rounded-2xl border border-dashed border-accent/30 bg-accent-soft/60 px-5 py-4">
-          <p className="text-xs font-bold uppercase tracking-widest text-accent">Admin demo</p>
-          <p className="mt-1 text-sm text-ink">
-            Email: <span className="font-bold">admin@falcon.com</span> · Password:{' '}
-            <span className="font-bold">admin123</span>
-          </p>
-          <p className="mt-1 text-xs text-mist">
-            Logging in as admin opens the dashboard. Normal users go to the store.
-          </p>
-        </div>
+
       </div>
     </div>
   )

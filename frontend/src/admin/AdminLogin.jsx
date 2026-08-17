@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext'
 function AdminLogin() {
   const { user, isAdmin, login } = useAuth()
   const navigate = useNavigate()
-  const [form, setForm] = useState({ email: 'admin@falcon.com', password: 'admin123' })
+  const [form, setForm] = useState({ email: '', password: '' })
   const [show, setShow] = useState(false)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -65,7 +65,7 @@ function AdminLogin() {
                   required
                   value={form.email}
                   onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-                  placeholder="admin@falcon.com"
+                  placeholder="you@example.com"
                   autoComplete="off"
                   className={`${field} pl-11`}
                 />
@@ -106,9 +106,7 @@ function AdminLogin() {
             </button>
           </form>
 
-          <div className="mt-5 rounded-xl bg-accent-soft px-4 py-3 text-center text-xs text-mist">
-            <span className="font-bold text-accent">Demo admin:</span> admin@falcon.com / admin123
-          </div>
+
         </div>
 
         <p className="mt-6 text-center text-sm text-mist">
