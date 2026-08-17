@@ -48,7 +48,7 @@ const details = [
   {
     icon: MapPin,
     label: 'Head Office',
-    value: 'Shanti Nagar, Professor Colony, Kamla Nagar, Agra, Uttar Pradesh 283205',
+    value: 'Shanti Nagar, Professor Colony, Kamla Nagar, Agra, Uttar Pradesh 282005',
     href: null,
   },
 ]
