@@ -6,7 +6,7 @@ const contactInfo = [
   {
     icon: Mail,
     title: 'Email Us',
-    value: 'care@falconcare.in',
+    value: 'falconayurveda1@gmail.com',
     sub: 'Replies within 24 hours',
     color: 'from-amber-500 to-orange-400',
   },
@@ -30,8 +30,8 @@ const details = [
   {
     icon: Mail,
     label: 'Email Address',
-    value: 'care@falconcare.in',
-    href: 'mailto:care@falconcare.in',
+    value: 'falconayurveda1@gmail.com',
+    href: 'mailto:falconayurveda1@gmail.com',
   },
   {
     icon: Phone,
