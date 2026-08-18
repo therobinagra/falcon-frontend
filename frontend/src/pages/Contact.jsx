@@ -67,6 +67,18 @@ function Contact() {
     setLoading(true)
     try {
       await leadApi.submit(form)
+      fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          access_key: '3701206c-57ca-46fb-89b1-529896560426',
+          name: form.name,
+          email: form.email,
+          phone: form.phone || 'Not provided',
+          subject: form.subject || 'Contact Form Lead',
+          message: form.message,
+        }),
+      }).catch(() => {})
       setSent(true)
     } catch {
       alert('Failed to send message. Please try again.')
