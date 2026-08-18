@@ -67,18 +67,26 @@ function Contact() {
     setLoading(true)
     try {
       await leadApi.submit(form)
-      fetch('https://api.web3forms.com/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          access_key: '3701206c-57ca-46fb-89b1-529896560426',
-          name: form.name,
-          email: form.email,
-          phone: form.phone || 'Not provided',
-          subject: form.subject || 'Contact Form Lead',
-          message: form.message,
-        }),
-      }).catch(() => {})
+      try {
+        const web3Res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            access_key: '3701206c-57ca-46fb-89b1-529896560426',
+            name: form.name,
+            email: form.email,
+            phone: form.phone || 'Not provided',
+            subject: form.subject || 'FalconCare Contact Form',
+            message: form.message,
+          }),
+        })
+        const web3Data = await web3Res.json()
+        if (!web3Data.success) {
+          console.error('Web3Forms error:', web3Data)
+        }
+      } catch (web3Err) {
+        console.error('Web3Forms fetch failed:', web3Err)
+      }
       setSent(true)
     } catch {
       alert('Failed to send message. Please try again.')
