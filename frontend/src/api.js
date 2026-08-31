@@ -1,4 +1,4 @@
-import { useSyncExternalStore } from 'react'
+import { useEffect, useSyncExternalStore } from 'react'
 import { products as localProducts } from './data/products'
 
 const API = import.meta.env.VITE_API_URL || 'https://falcon-backend-bty7.onrender.com/api'
@@ -11,7 +11,16 @@ const TIMEOUT_MS = 8000
 const cache = new Map()
 const listeners = new Set()
 
+// Stable snapshots for useSyncExternalStore — recomputed only on cache changes.
+// Without this, getSnapshot returns a new array each call and React errors out.
+const derived = new Map()
+
+function clearDerived() {
+  derived.clear()
+}
+
 function emit() {
+  clearDerived()
   listeners.forEach((fn) => fn())
 }
 
@@ -176,25 +185,43 @@ export const leadApi = {
   delete: (id) => request(`/leads/${id}`, { method: 'DELETE' }),
 }
 
-// React hook: reads a public array resource local-first and re-renders when the
-// remote copy arrives. Returns a plain array (cached || local fallback).
+// React hook: reads products local-first and re-renders when the remote copy
+// arrives. Returns a stable array (cached || local fallback).
 export function useCachedList(category) {
+  const key = category || 'all'
+
   const getSnapshot = () => {
+    if (derived.has(key)) return derived.get(key)
     const remote = cache.get('/products')
     const list = remote && remote.length ? remote : localProducts
-    if (!category || category === 'All Products') return list
-    return list.filter((p) => p.category === category)
+    const result =
+      key === 'all'
+        ? list
+        : list.filter((p) => p.category === category)
+    derived.set(key, result)
+    return result
   }
 
-  // Trigger remote fetch (no-op if already cached).
-  softRead('/products', null)
+  // Fetch remote copy in the background (no-op if already cached).
+  useEffect(() => {
+    softRead('/products', null)
+  }, [])
 
   return useSyncExternalStore(subscribeCache, getSnapshot, getSnapshot)
 }
 
 // React hook: cached blogs, local-first, auto-refresh when remote arrives.
 export function useCachedBlogs() {
-  const getSnapshot = () => cache.get('/blogs') || []
-  softRead('/blogs', [])
+  const getSnapshot = () => {
+    if (derived.has('blogs')) return derived.get('blogs')
+    const value = cache.get('/blogs') || []
+    derived.set('blogs', value)
+    return value
+  }
+
+  useEffect(() => {
+    softRead('/blogs', [])
+  }, [])
+
   return useSyncExternalStore(subscribeCache, getSnapshot, getSnapshot)
 }
