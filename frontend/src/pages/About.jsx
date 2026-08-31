@@ -126,7 +126,7 @@ function About() {
             >
               <div className="relative overflow-hidden rounded-[2.5rem] border border-line bg-white p-3 shadow-lux">
                 <img
-                  src="/images/leaves.jpg"
+                  src="/images/leaves.webp"
                   alt="Authentic Ayurvedic herbs"
                   className="h-[420px] w-full rounded-[2rem] object-cover"
                 />

@@ -50,7 +50,7 @@ Amrit Urja Capsule ko healthy lifestyle ke complement ke roop mein use karein. Y
 ## Conclusion
 
 Amrit Urja Capsule traditional Ayurvedic and herbal wellness ko modern daily lifestyle ke saath combine karne ka convenient option hai. Balanced diet, proper rest, exercise aur healthy routine ke saath ise apni everyday wellness journey ka part banaya ja sakta hai.`,
-    image: '/images/product5.jpg',
+    image: '/images/product5.webp',
   },
   {
     id: 'amrit-urja-oil',
@@ -112,7 +112,7 @@ Agar aapko koi medical condition hai, skin sensitivity hai, ya aap kisi treatmen
 Amrit Urja Oil traditional Ayurvedic herbal massage practices ko daily self-care routine ke saath include karne ka convenient option hai. Gentle external massage ke saath ise relaxation aur everyday body wellness routine ka part banaya ja sakta hai.
 
 Ayurvedic herbs, mindful massage aur healthy lifestyle habits — together, they can make everyday self-care more consistent and enjoyable.`,
-    image: '/images/product11.jpg',
+    image: '/images/product11.webp',
   },
   {
     id: 'shilajit-pure',
@@ -190,7 +190,7 @@ Shilajit Pure traditional Ayurvedic herbal wellness ko modern lifestyle ke saath
 Best results ke liye kisi bhi wellness product ko balanced diet, regular exercise, proper sleep aur healthy lifestyle ke saath approach karna important hai.
 
 Discover the traditional Ayurvedic approach to Shilajit and make herbal wellness a thoughtful part of your everyday routine.`,
-    image: '/images/product10.jpg',
+    image: '/images/product10.webp',
   },
   {
     id: 'falcon-combo-pack',
@@ -259,7 +259,7 @@ Pregnancy, breastfeeding, medical condition ya regular medication ki situation m
 Falcon Combo Pack traditional Ayurvedic and herbal wellness ko ek convenient collection mein bring karta hai. Amrit Urja Capsule, Amrit Urja Oil aur Shakti Vardhak Churna ko ek balanced lifestyle ke saath thoughtfully include kiya ja sakta hai.
 
 Ayurvedic tradition, herbal wellness and everyday self-care — all together in one convenient combo.`,
-    image: '/images/combo1.jpg',
+    image: '/images/combo1.webp',
   },
   {
     id: 'amrit-urja-churan',
@@ -316,6 +316,6 @@ Recommended quantity se zyada use na karein. Agar aap pregnant ya breastfeeding 
 Amrit Urja Churan traditional Ayurvedic and herbal wellness ko daily lifestyle ke saath include karne ka ek option hai. Healthy diet, proper rest, exercise aur balanced routine ke saath ise apni everyday wellness journey ka part banaya ja sakta hai.
 
 Traditional Ayurveda + herbal wellness + healthy lifestyle — ek balanced daily routine ki taraf simple approach.`,
-    image: '/images/churan1.jpg',
+    image: '/images/churan1.webp',
   },
 ]

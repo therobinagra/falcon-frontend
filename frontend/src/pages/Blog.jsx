@@ -1,24 +1,13 @@
-import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Calendar, Clock, ArrowRight } from 'lucide-react'
 import FadeIn from '../components/ui/FadeIn'
-import { blogApi } from '../api'
+import { useCachedBlogs } from '../api'
 import { articles as fallbackArticles } from '../data/articles'
 
 function Blog() {
-  const [articles, setArticles] = useState([])
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    blogApi
-      .getBlogs()
-      .then((data) => {
-        setArticles(Array.isArray(data) && data.length > 0 ? data : fallbackArticles)
-      })
-      .catch(() => setArticles(fallbackArticles))
-      .finally(() => setLoading(false))
-  }, [])
+  const remoteArticles = useCachedBlogs()
+  const articles = remoteArticles.length > 0 ? remoteArticles : fallbackArticles
 
   return (
     <>
@@ -40,11 +29,7 @@ function Blog() {
 
       <section className="mx-auto max-w-7xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-          {loading &&
-            Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-96 animate-pulse rounded-[1.75rem] border border-line bg-surface" />
-            ))}
-          {!loading && articles.length === 0 && (
+          {articles.length === 0 && (
             <p className="col-span-full py-16 text-center text-sm text-mist">No blog posts yet.</p>
           )}
           {articles.map((article, i) => (

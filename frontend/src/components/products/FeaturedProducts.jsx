@@ -1,25 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { getProducts } from '../../api'
+import { useCachedList } from '../../api'
 import ProductCard from './ProductCard'
 import QuickViewModal from './QuickViewModal'
 import FadeIn from '../ui/FadeIn'
 
 function FeaturedProducts() {
-  const [products, setProducts] = useState([])
-  const [loading, setLoading] = useState(true)
   const [quickView, setQuickView] = useState(null)
-
-  useEffect(() => {
-    getProducts()
-      .then((data) => {
-        const best = data.filter((p) => p.badge)
-        setProducts((best.length ? best : data).slice(0, 4))
-      })
-      .catch(() => setProducts([]))
-      .finally(() => setLoading(false))
-  }, [])
+  const allProducts = useCachedList()
+  const best = allProducts.filter((p) => p.badge)
+  const products = (best.length ? best : allProducts).slice(0, 4)
 
   return (
     <section id="shop" className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
@@ -40,19 +31,11 @@ function FeaturedProducts() {
         </FadeIn>
       </div>
 
-      {loading ? (
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-96 animate-pulse rounded-3xl border border-line bg-surface" />
-          ))}
-        </div>
-      ) : (
-        <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {products.map((product) => (
-            <ProductCard key={product._id} product={product} onQuickView={setQuickView} />
-          ))}
-        </div>
-      )}
+      <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {products.map((product) => (
+          <ProductCard key={product._id} product={product} onQuickView={setQuickView} />
+        ))}
+      </div>
 
       <QuickViewModal product={quickView} onClose={() => setQuickView(null)} />
     </section>

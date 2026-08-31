@@ -1,9 +1,25 @@
+import { useSyncExternalStore } from 'react'
 import { products as localProducts } from './data/products'
 
 const API = import.meta.env.VITE_API_URL || 'https://falcon-backend-bty7.onrender.com/api'
 const TOKEN_KEY = 'falcon-token'
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+// Requests timeout quickly instead of hanging (e.g. Render free-tier cold starts).
+const TIMEOUT_MS = 8000
+
+// Simple in-memory cache so repeat-independent reads don't refetch the backend.
+const cache = new Map()
+const listeners = new Set()
+
+function emit() {
+  listeners.forEach((fn) => fn())
+}
+
+// Subscribe to cache changes (e.g. remote data arriving after local-first render).
+export function subscribeCache(fn) {
+  listeners.add(fn)
+  return () => listeners.delete(fn)
+}
 
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY) || ''
@@ -14,7 +30,15 @@ export function setToken(token) {
   else localStorage.removeItem(TOKEN_KEY)
 }
 
+export function invalidateCache() {
+  cache.clear()
+  emit()
+}
+
 async function request(path, options = {}) {
+  const controller = new AbortController()
+  const timer = setTimeout(() => controller.abort(), options.timeout ?? TIMEOUT_MS)
+
   const token = getToken()
   const headers = { ...(options.headers || {}) }
   if (!(options.body instanceof FormData)) {
@@ -22,60 +46,75 @@ async function request(path, options = {}) {
   }
   if (token) headers['Authorization'] = `Bearer ${token}`
 
-  const res = await fetch(`${API}${path}`, { ...options, headers })
+  try {
+    const res = await fetch(`${API}${path}`, {
+      ...options,
+      headers,
+      signal: controller.signal,
+    })
 
-  if (!res.ok) {
-    let message = `Request failed (${res.status})`
-    try {
-      const data = await res.json()
-      if (data.message) message = data.message
-    } catch {
-      // ignore
+    if (!res.ok) {
+      let message = `Request failed (${res.status})`
+      try {
+        const data = await res.json()
+        if (data.message) message = data.message
+      } catch {
+        // ignore
+      }
+      const error = new Error(message)
+      error.status = res.status
+      throw error
     }
-    const error = new Error(message)
-    error.status = res.status
-    throw error
-  }
 
-  return res.status === 204 ? null : res.json()
+    return res.status === 204 ? null : res.json()
+  } finally {
+    clearTimeout(timer)
+  }
 }
 
-const fallbackDelay = () => delay(150)
+// Fetches a public read into the cache. Resolves with the cached/fallback data
+// immediately-ish and refreshes the cache in the background once a slow backend
+// finally responds. Never rejects for public reads.
+async function softRead(path, fallback) {
+  const fromCache = cache.get(path)
+  if (fromCache) return fromCache
+
+  request(path)
+    .then((data) => {
+      if (Array.isArray(data) && data.length > 0) {
+        cache.set(path, data)
+        emit()
+      }
+    })
+    .catch(() => {})
+  return fallback
+}
+
+const localCategories = () => [...new Set(localProducts.map((p) => p.category))]
 
 export const getProducts = async (category) => {
-  try {
-    const params = category && category !== 'All Products' ? `?category=${encodeURIComponent(category)}` : ''
-    const data = await request(`/products${params}`)
-    return Array.isArray(data) && data.length > 0 ? data : localProducts
-  } catch {
-    await fallbackDelay()
-    if (!category || category === 'All Products') return localProducts
-    return localProducts.filter((p) => p.category === category)
-  }
+  const filtered = (list) =>
+    !category || category === 'All Products'
+      ? list
+      : list.filter((p) => p.category === category)
+
+  const remote = await softRead('/products', null)
+  return remote ? filtered(remote) : filtered(localProducts)
 }
 
 export const getProduct = async (id) => {
-  try {
-    const data = await request(`/products/${id}`)
-    if (data && data._id) return data
-    throw new Error('Not found')
-  } catch {
-    await fallbackDelay()
-    return localProducts.find((p) => p._id === id) ?? null
-  }
+  const locale = localProducts.find((p) => p._id === id)
+  const fromRemote = await softRead(`/products/${id}`, null)
+  if (fromRemote && fromRemote._id) return fromRemote
+  return locale ?? null
 }
 
 export const getCategories = async () => {
-  try {
-    const data = await request('/categories')
-    if (Array.isArray(data) && data.length > 0) {
-      return data.map((c) => c.name || c)
-    }
-    return [...new Set(localProducts.map((p) => p.category))]
-  } catch {
-    await fallbackDelay()
-    return [...new Set(localProducts.map((p) => p.category))]
+  const remote = await softRead('/categories', null)
+  if (remote && Array.isArray(remote) && remote.length > 0) {
+    return remote.map((c) => c.name || c)
   }
+  return localCategories()
 }
 
 export const getHealth = async () => {
@@ -104,7 +143,7 @@ export const orderApi = {
 }
 
 export const blogApi = {
-  getBlogs: () => request('/blogs'),
+  getBlogs: () => softRead('/blogs', []),
   getBlog: (id) => request(`/blogs/${id}`),
   createBlog: (payload) => request('/blogs', { method: 'POST', body: JSON.stringify(payload) }),
   updateBlog: (id, payload) => request(`/blogs/${id}`, { method: 'PUT', body: JSON.stringify(payload) }),
@@ -135,4 +174,27 @@ export const leadApi = {
   getAll: () => request('/leads'),
   updateStatus: (id, status) => request(`/leads/${id}`, { method: 'PUT', body: JSON.stringify({ status }) }),
   delete: (id) => request(`/leads/${id}`, { method: 'DELETE' }),
+}
+
+// React hook: reads a public array resource local-first and re-renders when the
+// remote copy arrives. Returns a plain array (cached || local fallback).
+export function useCachedList(category) {
+  const getSnapshot = () => {
+    const remote = cache.get('/products')
+    const list = remote && remote.length ? remote : localProducts
+    if (!category || category === 'All Products') return list
+    return list.filter((p) => p.category === category)
+  }
+
+  // Trigger remote fetch (no-op if already cached).
+  softRead('/products', null)
+
+  return useSyncExternalStore(subscribeCache, getSnapshot, getSnapshot)
+}
+
+// React hook: cached blogs, local-first, auto-refresh when remote arrives.
+export function useCachedBlogs() {
+  const getSnapshot = () => cache.get('/blogs') || []
+  softRead('/blogs', [])
+  return useSyncExternalStore(subscribeCache, getSnapshot, getSnapshot)
 }

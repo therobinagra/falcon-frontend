@@ -12,7 +12,7 @@ import {
   RotateCcw,
   ChevronRight,
 } from 'lucide-react'
-import { getProducts } from '../api'
+import { useCachedList } from '../api'
 import { useCart } from '../context/cartContext'
 import { formatINR } from '../utils'
 import QuickViewModal from '../components/products/QuickViewModal'
@@ -21,31 +21,15 @@ import FadeIn from '../components/ui/FadeIn'
 function ProductPage() {
   const { id } = useParams()
   const { addItem, wishlist, toggleWishlist } = useCart()
-  const [product, setProduct] = useState(null)
-  const [loading, setLoading] = useState(true)
   const [qty, setQty] = useState(1)
   const [quickView, setQuickView] = useState(null)
 
-  useEffect(() => {
-    getProducts()
-      .then((data) => {
-        setProduct(data.find((p) => p._id === id) ?? null)
-      })
-      .catch(() => setProduct(null))
-      .finally(() => setLoading(false))
-  }, [id])
+  const allProducts = useCachedList()
+  const product = allProducts.find((p) => p._id === id) ?? null
 
   useEffect(() => {
     setQty(1)
   }, [id])
-
-  if (loading) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-28 sm:px-6 lg:px-8">
-        <div className="h-96 animate-pulse rounded-[2rem] border border-line bg-surface" />
-      </div>
-    )
-  }
 
   if (!product) {
     return (

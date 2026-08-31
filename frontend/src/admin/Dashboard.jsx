@@ -4,7 +4,6 @@ import {
   Package,
   ShoppingBag,
   Users,
-  Tags,
   Mail,
   IndianRupee,
   TrendingUp,

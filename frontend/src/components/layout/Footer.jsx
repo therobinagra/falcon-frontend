@@ -57,7 +57,7 @@ function Footer() {
           <div className="lg:col-span-2">
             <Link to="/" className="flex items-center gap-2">
               <img
-                src="/images/logo.jpg"
+                src="/images/logo.webp"
                 alt="FalconCare"
                 className="h-10 w-10 rounded-xl object-cover shadow-md shadow-accent/20"
               />

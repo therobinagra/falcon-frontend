@@ -4,7 +4,7 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const banners = [
   {
-    image: '/images/banner1.jpg',
+    image: '/images/banner1.webp',
     eyebrow: 'India\u2019s Premium Men\u2019s Wellness Brand',
     title: 'Last longer. Feel stronger.',
     sub: 'Doctor-verified solutions for performance, stamina and confidence. Discreetly delivered.',
@@ -12,7 +12,7 @@ const banners = [
     link: '#shop',
   },
   {
-    image: '/images/banner2.jpg',
+    image: '/images/banner2.webp',
     eyebrow: 'Clinically Dosed Capsules & Oils',
     title: 'Build real stamina, naturally.',
     sub: 'Ashwagandha, Shilajit and more — backed by science and trusted by 1,00,000+ men.',
@@ -20,7 +20,7 @@ const banners = [
     link: '#shop',
   },
   {
-    image: '/images/banner3.jpg',
+    image: '/images/banner3.webp',
     eyebrow: '100% Private & Discreet',
     title: 'Confidence, delivered to your door.',
     sub: 'Plain packaging, free fast delivery and 24/7 support. Shop with total privacy.',
