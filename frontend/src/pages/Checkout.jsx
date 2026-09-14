@@ -4,18 +4,15 @@ import { motion } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
-  Banknote,
   CheckCircle2,
   ChevronDown,
   CreditCard,
-  FileText,
   Landmark,
   Lock,
   Mail,
   MapPin,
   Phone,
   ShieldCheck,
-  Smartphone,
   Truck,
   User as UserIcon,
   Copy,
@@ -23,7 +20,8 @@ import {
 } from 'lucide-react'
 import { useCart } from '../context/cartContext'
 import { useAuth } from '../context/AuthContext'
-import { orderApi } from '../api'
+import { orderApi, shiprocketApi } from '../api'
+import { loadFastrrSdk, hasFastrrSdk } from '../loadFastrr'
 import { productIcon, formatINR } from '../utils'
 
 const inputCls =
@@ -49,44 +47,21 @@ const SHIPPING_FEE = 49
 const payMethods = [
   {
     icon: Landmark,
-    title: 'Net Banking / Credit / Debit Cards',
-    desc: 'Pay online instantly through credit/debit cards such as Mastercard, Visa and Rupay cards, and Netbanking by SBI, HDFC, ICICI, PNB, KOTAK, Andhra Bank and others.',
-  },
-  {
-    icon: Wallet,
-    title: 'Razorpay / Paytm',
-    desc: 'Pay online instantly through the Razorpay and Paytm payment gateways.',
-  },
-  {
-    icon: Smartphone,
-    title: 'UPI & Wallets',
-    desc: 'Google Pay, PhonePe, Cred, Amazon Pay, BHIM UPI, Paytm wallet, Paytm Payments Bank, Paytm Rupay card, Mobikwik, Ola Money, JioMoney, Freecharge, PayZapp and more.',
-  },
-  {
-    icon: CreditCard,
-    title: 'Visa / Master / Rupay Cards & Wallets',
-    desc: 'Pay online instantly through Mastercard, Visa and Rupay credit/debit cards issued by SBI, ICICI Bank, HDFC Bank, Axis Bank, DB, KYB, Corp Bank, IOB, Kotak etc.',
-  },
-  {
-    icon: FileText,
-    title: 'Personal Cheque / Bank Draft',
-    desc: 'It takes about seven days for your cheque/draft to reach us by post. To speed up the process, you may use express mail service. We dispatch your orders on receipt of the cheque/draft. Please note that we do not accept international cheque/draft/MO.',
+    title: 'UPI / Cards / Net Banking',
+    desc: 'Pay online securely via UPI, Credit/Debit Cards, Net Banking, and Wallets.',
   },
 ]
 
 const payChips = [
+  'UPI',
+  'Google Pay',
+  'PhonePe',
+  'BHIM',
   'Mastercard',
   'Visa',
   'Rupay',
   'Netbanking',
-  'Razorpay',
-  'Paytm',
-  'Google Pay',
-  'PhonePe',
-  'UPI',
-  'BHIM',
   'Wallets',
-  'Cheque / Draft',
 ]
 
 function SummaryItem({ item }) {
@@ -132,7 +107,7 @@ function Checkout() {
     city: '',
     state: '',
     pincode: '',
-    paymentMethod: 'COD',
+    paymentMethod: 'Prepaid',
   })
 
   const set = (key, value) => setForm((f) => ({ ...f, [key]: value }))
@@ -177,11 +152,64 @@ function Checkout() {
           pincode: form.pincode.trim(),
         },
         items: items.map((item) => ({ product: item._id, qty: item.qty })),
-        paymentMethod: form.paymentMethod,
+        paymentMethod: 'Prepaid',
       })
-      setPlaced(order)
-      clearCart()
-      window.scrollTo({ top: 0, behavior: 'smooth' })
+
+      const finish = () => {
+        setPlaced(order)
+        clearCart()
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+
+      let checkoutToken = ''
+      try {
+        const tokenRes = await shiprocketApi.getCheckoutToken(order._id)
+        checkoutToken = tokenRes?.token || ''
+      } catch (err) {
+        console.warn('Shiprocket checkout token unavailable:', err.message)
+      }
+
+      if (checkoutToken) {
+        await loadFastrrSdk()
+        if (window.HeadlessCheckout) {
+          window.HeadlessCheckout.addToCart(checkoutToken)
+          finish()
+        } else if (window.FastrrCheckout) {
+          window.FastrrCheckout.open({
+            orderId: order._id,
+            checkoutToken,
+            token: checkoutToken,
+            amount: order.totalPrice,
+            customer: {
+              name: form.name.trim(),
+              email: form.email.trim(),
+              phone: form.phone.trim(),
+            },
+            onSuccess: finish,
+            onClose: () => {
+              setBusy(false)
+            },
+          })
+        } else {
+          finish()
+        }
+      } else if (hasFastrrSdk() && window.FastrrCheckout) {
+        window.FastrrCheckout.open({
+          orderId: order._id,
+          amount: order.totalPrice,
+          customer: {
+            name: form.name.trim(),
+            email: form.email.trim(),
+            phone: form.phone.trim(),
+          },
+          onSuccess: finish,
+          onClose: () => {
+            setBusy(false)
+          },
+        })
+      } else {
+        finish()
+      }
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
     } finally {
@@ -292,8 +320,7 @@ function Checkout() {
   }
 
   const paymentOptions = [
-    { key: 'COD', label: 'Cash on Delivery', sub: 'Pay when your order arrives', icon: Banknote },
-    { key: 'Online', label: 'UPI / Card', sub: 'Pay securely online now', icon: CreditCard },
+    { key: 'Prepaid', label: 'Pay Online (UPI / Card)', sub: 'Pay securely via UPI, Cards, or Net Banking', icon: CreditCard },
   ]
 
   return (
@@ -385,13 +412,6 @@ function Checkout() {
                   )
                 })}
               </div>
-              {form.paymentMethod === 'Online' && (
-                <p className="mt-4 flex items-start gap-2 rounded-xl bg-accent-soft/60 px-4 py-3 text-xs font-semibold text-accent">
-                  <Lock className="mt-0.5 h-4 w-4 shrink-0" />
-                  Online payment is simulated in this demo. No money will be deducted.
-                </p>
-              )}
-
               <button
                 type="button"
                 onClick={() => setShowPayInfo((v) => !v)}
@@ -442,20 +462,6 @@ function Checkout() {
                         </div>
                       )
                     })}
-                  </div>
-                  <div className="border-t border-line bg-accent-soft/50 px-5 py-4 text-xs leading-relaxed text-mist">
-                    <p className="font-extrabold uppercase tracking-widest text-accent">
-                      For cheque / draft payments
-                    </p>
-                    <p className="mt-2">
-                      Personal cheque or bank draft should be made in the name of{' '}
-                      <span className="font-bold text-ink">"Falcon Ayurveda"</span>, and sent to:
-                    </p>
-                    <p className="mt-2 font-bold text-ink">
-                      Falcon Ayurveda Pvt. Ltd.
-                      <br />
-                      Shanti nagar, Professor colony Kamla nagar Agra-283205
-                    </p>
                   </div>
                 </div>
               )}

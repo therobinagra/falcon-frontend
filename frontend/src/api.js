@@ -149,6 +149,19 @@ export const orderApi = {
     if (id) params.set('id', id)
     return request(`/orders/track?${params.toString()}`)
   },
+  confirmPayment: (id) => request(`/orders/${id}/confirm-payment`, { method: 'POST' }),
+}
+
+export const shiprocketApi = {
+  getShippingRates: (pickup, delivery, weight) =>
+    request(`/shiprocket/rates?pickup_pincode=${pickup}&delivery_pincode=${delivery}&weight=${weight}`),
+  getEstimate: (pickup, delivery, weight) =>
+    request(`/shiprocket/estimate?pickup_pincode=${pickup}&delivery_pincode=${delivery}&weight=${weight}`),
+  getCheckoutToken: (orderId, redirectUrl = '') =>
+    request('/shiprocket/checkout-token', {
+      method: 'POST',
+      body: JSON.stringify({ orderId, redirectUrl }),
+    }),
 }
 
 export const blogApi = {
