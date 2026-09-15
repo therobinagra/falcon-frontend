@@ -2,7 +2,8 @@ let scriptPromise = null
 
 const candidates = [
   import.meta.env.VITE_FASTRR_SDK_URL,
-  'https://checkout.shiprocket.in/api/v1/v2/checkout/sdk.js',
+  'https://checkout-ui.shiprocket.com/assets/js/channels/shopify.js',
+  'https://customcheckoutfastrr.netlify.app/assets/js/channels/shopify.js',
   'https://checkout-ui.shiprocket.com/checkout.js',
 ].filter(Boolean)
 

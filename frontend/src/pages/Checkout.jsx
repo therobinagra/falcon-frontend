@@ -96,6 +96,7 @@ function Checkout() {
   const navigate = useNavigate()
 
   const [placed, setPlaced] = useState(null)
+  const [pendingPayment, setPendingPayment] = useState(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [showPayInfo, setShowPayInfo] = useState(false)
@@ -155,64 +156,63 @@ function Checkout() {
         paymentMethod: 'Prepaid',
       })
 
-      const finish = () => {
-        setPlaced(order)
-        clearCart()
-        window.scrollTo({ top: 0, behavior: 'smooth' })
-      }
-
       let checkoutToken = ''
       try {
         const tokenRes = await shiprocketApi.getCheckoutToken(order._id)
-        checkoutToken = tokenRes?.token || ''
+        checkoutToken = tokenRes?.result?.token || tokenRes?.token || ''
       } catch (err) {
         console.warn('Shiprocket checkout token unavailable:', err.message)
       }
 
       if (checkoutToken) {
-        await loadFastrrSdk()
-        if (window.HeadlessCheckout) {
-          window.HeadlessCheckout.addToCart(checkoutToken)
-          finish()
-        } else if (window.FastrrCheckout) {
-          window.FastrrCheckout.open({
-            orderId: order._id,
-            checkoutToken,
-            token: checkoutToken,
-            amount: order.totalPrice,
-            customer: {
-              name: form.name.trim(),
-              email: form.email.trim(),
-              phone: form.phone.trim(),
-            },
-            onSuccess: finish,
-            onClose: () => {
-              setBusy(false)
-            },
-          })
-        } else {
-          finish()
-        }
-      } else if (hasFastrrSdk() && window.FastrrCheckout) {
+        setPendingPayment({ order, token: checkoutToken })
+      } else {
+        setPlaced(order)
+        clearCart()
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+    } catch (err) {
+      setError(err.message || 'Something went wrong. Please try again.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
+  const handlePayment = async (e) => {
+    e.preventDefault()
+    if (!pendingPayment) return
+    setBusy(true)
+    try {
+      await loadFastrrSdk()
+      if (window.HeadlessCheckout) {
+        window.HeadlessCheckout.addToCart(e, pendingPayment.token)
+      } else if (window.FastrrCheckout) {
         window.FastrrCheckout.open({
-          orderId: order._id,
-          amount: order.totalPrice,
+          orderId: pendingPayment.order._id,
+          token: pendingPayment.token,
+          checkoutToken: pendingPayment.token,
+          amount: pendingPayment.order.totalPrice,
           customer: {
             name: form.name.trim(),
             email: form.email.trim(),
             phone: form.phone.trim(),
           },
-          onSuccess: finish,
-          onClose: () => {
-            setBusy(false)
+          onSuccess: () => {
+            setPlaced(pendingPayment.order)
+            setPendingPayment(null)
+            clearCart()
+            window.scrollTo({ top: 0, behavior: 'smooth' })
           },
+          onClose: () => setBusy(false),
         })
       } else {
-        finish()
+        setPlaced(pendingPayment.order)
+        setPendingPayment(null)
+        clearCart()
+        window.scrollTo({ top: 0, behavior: 'smooth' })
       }
     } catch (err) {
-      setError(err.message || 'Something went wrong. Please try again.')
-    } finally {
+      console.error('Payment SDK error:', err)
       setBusy(false)
     }
   }
@@ -297,6 +297,61 @@ function Checkout() {
             </div>
           </div>
         </motion.div>
+      </div>
+    )
+  }
+
+  if (pendingPayment) {
+    return (
+      <div className="bg-surface px-4 pb-20 pt-24 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl">
+          <button
+            onClick={() => { setPendingPayment(null); setError('') }}
+            className="flex items-center gap-2 text-sm font-bold text-mist transition hover:text-accent"
+          >
+            <ArrowLeft className="h-4 w-4" /> Back
+          </button>
+          <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-ink">Complete Payment</h1>
+          <p className="mt-1 text-sm text-mist">Your order has been created. Click below to complete payment.</p>
+
+          <div className="mt-6 overflow-hidden rounded-3xl border border-line bg-white p-6 shadow-lux sm:p-7">
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-dashed border-accent/40 bg-accent-soft/60 px-5 py-4 text-center">
+                <p className="text-xs font-bold uppercase tracking-widest text-accent">Order ID</p>
+                <p className="mt-1 break-all font-mono text-sm font-bold text-ink">#{pendingPayment.order._id}</p>
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between text-mist">
+                  <span>Items</span>
+                  <span className="font-semibold text-ink">{formatINR(pendingPayment.order.itemsPrice)}</span>
+                </div>
+                <div className="flex justify-between text-mist">
+                  <span>Shipping</span>
+                  <span className="font-semibold text-ink">
+                    {pendingPayment.order.shippingPrice === 0 ? 'FREE' : formatINR(pendingPayment.order.shippingPrice)}
+                  </span>
+                </div>
+                <div className="flex justify-between border-t border-line pt-3 text-lg font-extrabold text-ink">
+                  <span>Total</span>
+                  <span className="text-accent">{formatINR(pendingPayment.order.totalPrice)}</span>
+                </div>
+              </div>
+              <button
+                type="button"
+                disabled={busy}
+                onClick={handlePayment}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-accent px-4 py-4 text-sm font-black uppercase tracking-wide text-white shadow-lg shadow-accent/25 transition hover:bg-accent-dark disabled:opacity-60"
+              >
+                <Lock className="h-4 w-4" />
+                {busy ? 'Opening payment...' : 'Pay now'}
+              </button>
+              <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs text-mist">
+                <ShieldCheck className="h-4 w-4 text-accent" />
+                100% secure checkout · Discreet packaging
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
