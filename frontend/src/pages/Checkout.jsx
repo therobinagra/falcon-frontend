@@ -185,7 +185,10 @@ function Checkout() {
     try {
       await loadFastrrSdk()
       if (window.HeadlessCheckout) {
-        window.HeadlessCheckout.addToCart(e, pendingPayment.token)
+        window.HeadlessCheckout.addToCart(e, pendingPayment.token, {
+          fallbackUrl: `${window.location.origin}/?order=${pendingPayment.order._id}`,
+          isInitiatedFromApp: false,
+        })
       } else if (window.FastrrCheckout) {
         window.FastrrCheckout.open({
           orderId: pendingPayment.order._id,
