@@ -158,7 +158,8 @@ function Checkout() {
 
       let checkoutToken = ''
       try {
-        const tokenRes = await shiprocketApi.getCheckoutToken(order._id)
+        const redirectUrl = `${window.location.origin}/?order=${order._id}`
+        const tokenRes = await shiprocketApi.getCheckoutToken(order._id, redirectUrl)
         checkoutToken = tokenRes?.result?.token || tokenRes?.token || ''
       } catch (err) {
         console.warn('Shiprocket checkout token unavailable:', err.message)

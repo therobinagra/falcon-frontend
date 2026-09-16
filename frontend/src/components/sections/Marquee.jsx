@@ -4,7 +4,7 @@ const items = [
   { icon: Truck, text: 'Free Delivery Across India' },
   { icon: ShieldCheck, text: '100% Discreet Packaging' },
   { icon: BadgePercent, text: 'Up to 40% Off Every Day' },
-  { icon: CreditCard, text: 'Cash on Delivery Available' },
+  { icon: CreditCard, text: 'UPI & Card Payments Accepted' },
   { icon: Star, text: 'Rated 4.9/5 by 50,000+ Men' },
   { icon: Lock, text: 'Secure & Private Checkout' },
 ]

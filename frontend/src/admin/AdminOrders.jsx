@@ -79,7 +79,7 @@ function OrderDetail({ order, onClose }) {
           </div>
           <div className="flex flex-wrap gap-2 pt-2">
             <Badge tone={statusTone[order.status] || 'slate'}>{order.status}</Badge>
-            <Badge tone={order.paymentMethod === 'COD' ? 'amber' : 'green'}>{order.paymentMethod}</Badge>
+            <Badge tone="green">{order.paymentMethod}</Badge>
             <Badge tone={order.paymentStatus === 'Paid' ? 'green' : 'amber'}>
               Payment: {order.paymentStatus}
             </Badge>
@@ -215,7 +215,7 @@ function AdminOrders() {
                       <p className="font-extrabold text-ink">{formatINR(order.totalPrice)}</p>
                     </Td>
                     <Td>
-                      <Badge tone={order.paymentMethod === 'COD' ? 'amber' : 'green'}>
+                      <Badge tone="green">
                         {order.paymentMethod}
                       </Badge>
                     </Td>

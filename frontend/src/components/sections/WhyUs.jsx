@@ -33,7 +33,7 @@ const features = [
   {
     icon: Lock,
     title: 'Secure Payments',
-    desc: 'Encrypted transactions with COD, UPI and card options for total peace of mind.',
+    desc: 'Encrypted transactions with UPI and card options for total peace of mind.',
     color: 'from-rose-500 to-pink-400',
     bg: 'bg-rose-50',
   },

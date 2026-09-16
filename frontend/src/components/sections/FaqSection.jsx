@@ -20,8 +20,8 @@ const FAQS = [
     a: 'No. You can order without a prescription. However, our in-house doctors review your order and may follow up if any product needs a quick check-in for your safety.',
   },
   {
-    q: 'Is COD available?',
-    a: 'Yes, Cash on Delivery is available across India on orders up to ₹5,000. UPI, cards and net banking are also supported at checkout.',
+    q: 'How do I pay for my order?',
+    a: 'Currently we accept prepaid online payments only. You can pay securely via UPI (Google Pay, PhonePe, Paytm), credit/debit cards and net banking at checkout.',
   },
   {
     q: 'Is my personal information private?',

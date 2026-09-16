@@ -71,7 +71,7 @@ function QuickViewModal({ product, onClose }) {
           <p className="mt-4 text-sm leading-relaxed text-mist">{product.description}</p>
 
           <ul className="mt-4 space-y-2 text-sm text-mist">
-            {['Doctor reviewed formula', 'Free & discreet delivery', 'COD available'].map((li) => (
+            {['Doctor reviewed formula', 'Free & discreet delivery', '100% secure online payment'].map((li) => (
               <li key={li} className="flex items-center gap-2">
                 <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent-soft text-accent">
                   <Check className="h-3 w-3" />

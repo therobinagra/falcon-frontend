@@ -44,7 +44,7 @@ function CTABanner() {
             </div>
 
             <p className="mt-6 text-xs text-amber-50/80">
-              Free &amp; discreet delivery · COD available · 100% secure payments
+              Free &amp; discreet delivery · 100% secure online payments
             </p>
           </div>
         </div>
