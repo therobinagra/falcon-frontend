@@ -162,6 +162,8 @@ export const shiprocketApi = {
       method: 'POST',
       body: JSON.stringify({ orderId, redirectUrl }),
     }),
+  confirmPayment: (orderId) =>
+    request(`/shiprocket/confirm/${orderId}`, { method: 'POST' }),
 }
 
 export const blogApi = {

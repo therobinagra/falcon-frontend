@@ -21,7 +21,7 @@ import {
 import { useCart } from '../context/cartContext'
 import { useAuth } from '../context/AuthContext'
 import { orderApi, shiprocketApi } from '../api'
-import { loadFastrrSdk, hasFastrrSdk } from '../loadFastrr'
+import { loadFastrrSdk } from '../loadFastrr'
 import { productIcon, formatINR } from '../utils'
 
 const inputCls =
@@ -168,9 +168,8 @@ function Checkout() {
       if (checkoutToken) {
         setPendingPayment({ order, token: checkoutToken })
       } else {
-        setPlaced(order)
-        clearCart()
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        setError('Payment gateway is temporarily unavailable. Your order has been saved — please try again in a moment.')
+        setBusy(false)
       }
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
@@ -198,7 +197,12 @@ function Checkout() {
             email: form.email.trim(),
             phone: form.phone.trim(),
           },
-          onSuccess: () => {
+          onSuccess: async () => {
+            try {
+              await shiprocketApi.confirmPayment(pendingPayment.order._id)
+            } catch (e) {
+              console.warn('Confirm payment API failed:', e.message)
+            }
             setPlaced(pendingPayment.order)
             setPendingPayment(null)
             clearCart()
@@ -207,13 +211,12 @@ function Checkout() {
           onClose: () => setBusy(false),
         })
       } else {
-        setPlaced(pendingPayment.order)
-        setPendingPayment(null)
-        clearCart()
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        setError('Payment gateway could not load. Please check your internet connection and try again.')
+        setBusy(false)
       }
     } catch (err) {
       console.error('Payment SDK error:', err)
+      setError('Payment failed to initialize. Please try again.')
       setBusy(false)
     }
   }
