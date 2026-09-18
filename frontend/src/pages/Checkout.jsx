@@ -1,10 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
 import {
   ArrowLeft,
   ArrowRight,
-  CheckCircle2,
   ChevronDown,
   CreditCard,
   Landmark,
@@ -15,7 +13,6 @@ import {
   ShieldCheck,
   Truck,
   User as UserIcon,
-  Copy,
   Wallet,
 } from 'lucide-react'
 import { useCart } from '../context/cartContext'
@@ -43,6 +40,19 @@ function Field({ icon: Icon, label, ...props }) {
 
 const FREE_SHIPPING_OVER = 499
 const SHIPPING_FEE = 49
+const ORDER_KEY = 'falcon-order'
+
+function saveStoredOrder(data) {
+  sessionStorage.setItem(ORDER_KEY, JSON.stringify(data))
+}
+
+function readStoredOrder() {
+  try {
+    return JSON.parse(sessionStorage.getItem(ORDER_KEY)) || null
+  } catch {
+    return null
+  }
+}
 
 const payMethods = [
   {
@@ -91,11 +101,10 @@ function SummaryItem({ item }) {
 }
 
 function Checkout() {
-  const { items, subtotal, clearCart } = useCart()
+  const { items, subtotal } = useCart()
   const { user } = useAuth()
   const navigate = useNavigate()
 
-  const [placed, setPlaced] = useState(null)
   const [pendingPayment, setPendingPayment] = useState(null)
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
@@ -112,6 +121,15 @@ function Checkout() {
   })
 
   const set = (key, value) => setForm((f) => ({ ...f, [key]: value }))
+
+  // If the user already placed an order and left without paying, resume it
+  // instead of silently creating a fresh (duplicate) order.
+  useEffect(() => {
+    const stored = readStoredOrder()
+    if (stored?.order && stored.order.paymentStatus !== 'Paid') {
+      setPendingPayment(stored)
+    }
+  }, [])
 
   const shippingPrice = subtotal >= FREE_SHIPPING_OVER ? 0 : SHIPPING_FEE
   const totalPrice = subtotal + shippingPrice
@@ -138,6 +156,13 @@ function Checkout() {
       return
     }
 
+    // Avoid duplicate orders: if a payment is already pending, jump back to it.
+    const existing = readStoredOrder()
+    if (existing?.order && existing.order.paymentStatus !== 'Paid') {
+      setPendingPayment(existing)
+      return
+    }
+
     setBusy(true)
     try {
       const order = await orderApi.createOrder({
@@ -156,20 +181,30 @@ function Checkout() {
         paymentMethod: 'Prepaid',
       })
 
+      const redirectUrl = `${window.location.origin}/?order=${order._id}`
+      let checkoutUrl = ''
       let checkoutToken = ''
       try {
-        const redirectUrl = `${window.location.origin}/?order=${order._id}`
         const tokenRes = await shiprocketApi.getCheckoutToken(order._id, redirectUrl)
-        checkoutToken = tokenRes?.result?.token || tokenRes?.token || ''
+        checkoutUrl = tokenRes?.checkout_url || tokenRes?.result?.checkout_url || ''
+        checkoutToken = tokenRes?.token || tokenRes?.result?.token || ''
       } catch (err) {
         console.warn('Shiprocket checkout token unavailable:', err.message)
       }
 
-      if (checkoutToken) {
-        setPendingPayment({ order, token: checkoutToken })
-      } else {
-        setError('Payment gateway is temporarily unavailable. Your order has been saved — please try again in a moment.')
-        setBusy(false)
+      const pending = { order, token: checkoutToken, checkoutUrl }
+      saveStoredOrder(pending)
+
+      if (checkoutUrl) {
+        window.location.replace(checkoutUrl)
+        return
+      }
+
+      setPendingPayment(pending)
+      if (!checkoutToken) {
+        setError(
+          'Your order is saved! The payment page could not be opened right now — tap "Pay now" below to continue.'
+        )
       }
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.')
@@ -183,38 +218,70 @@ function Checkout() {
     if (!pendingPayment) return
     setBusy(true)
     try {
+      const redirectUrl = `${window.location.origin}/?order=${pendingPayment.order._id}`
+
+      if (pendingPayment.checkoutUrl) {
+        window.location.replace(pendingPayment.checkoutUrl)
+        return
+      }
+
+      let token = pendingPayment.token || ''
+      if (!token) {
+        try {
+          const tokenRes = await shiprocketApi.getCheckoutToken(
+            pendingPayment.order._id,
+            redirectUrl
+          )
+          const checkoutUrl = tokenRes?.checkout_url || tokenRes?.result?.checkout_url || ''
+          token = tokenRes?.token || tokenRes?.result?.token || ''
+          if (checkoutUrl) {
+            saveStoredOrder({ order: pendingPayment.order, token: '', checkoutUrl })
+            window.location.replace(checkoutUrl)
+            return
+          }
+        } catch (err) {
+          console.warn('Checkout token retry failed:', err.message)
+        }
+      }
+
+      if (!token) {
+        setError(
+          'Payment gateway is not reachable right now. Your order is saved — you can pay again any time from the Track Order page.'
+        )
+        setBusy(false)
+        return
+      }
+
       await loadFastrrSdk()
       if (window.HeadlessCheckout) {
-        window.HeadlessCheckout.addToCart(e, pendingPayment.token, {
-          fallbackUrl: `${window.location.origin}/?order=${pendingPayment.order._id}`,
+        window.HeadlessCheckout.addToCart(e, token, {
+          fallbackUrl: redirectUrl,
           isInitiatedFromApp: false,
         })
+        // The checkout overlay opens on top of this screen — never leave the
+        // button stuck in a loading state if the customer closes it.
+        setBusy(false)
       } else if (window.FastrrCheckout) {
         window.FastrrCheckout.open({
           orderId: pendingPayment.order._id,
-          token: pendingPayment.token,
-          checkoutToken: pendingPayment.token,
+          token,
+          checkoutToken: token,
           amount: pendingPayment.order.totalPrice,
+          redirectUrl: redirectUrl,
           customer: {
             name: form.name.trim(),
             email: form.email.trim(),
             phone: form.phone.trim(),
           },
-          onSuccess: async () => {
-            try {
-              await shiprocketApi.confirmPayment(pendingPayment.order._id)
-            } catch (e) {
-              console.warn('Confirm payment API failed:', e.message)
-            }
-            setPlaced(pendingPayment.order)
-            setPendingPayment(null)
-            clearCart()
-            window.scrollTo({ top: 0, behavior: 'smooth' })
+          onSuccess: () => {
+            navigate('/order-success', { replace: true })
           },
           onClose: () => setBusy(false),
         })
       } else {
-        setError('Payment gateway could not load. Please check your internet connection and try again.')
+        setError(
+          'Payment gateway could not load. Please check your internet connection and try again.'
+        )
         setBusy(false)
       }
     } catch (err) {
@@ -222,90 +289,6 @@ function Checkout() {
       setError('Payment failed to initialize. Please try again.')
       setBusy(false)
     }
-  }
-
-  if (placed) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-surface px-4 py-24">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.4 }}
-          className="w-full max-w-lg"
-        >
-          <div className="overflow-hidden rounded-3xl border border-line bg-white text-center shadow-lux">
-            <div className="bg-accent px-6 py-10 text-white">
-              <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-white/20">
-                <CheckCircle2 className="h-10 w-10" />
-              </span>
-              <h1 className="mt-5 text-2xl font-extrabold">Order Placed!</h1>
-              <p className="mt-1 text-sm font-medium text-white/90">
-                Thank you {placed.customer?.name}. Your order is confirmed.
-              </p>
-            </div>
-
-            <div className="space-y-4 p-7 text-left">
-              <div className="rounded-2xl border border-dashed border-accent/40 bg-accent-soft/60 px-5 py-4 text-center">
-                <p className="text-xs font-bold uppercase tracking-widest text-accent">Order ID</p>
-                <p className="mt-1 break-all font-mono text-sm font-bold text-ink">#{placed._id}</p>
-                <button
-                  onClick={() => navigator.clipboard?.writeText(placed._id)}
-                  className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-accent/40 px-3 py-1 text-xs font-bold text-accent transition hover:bg-accent hover:text-white"
-                >
-                  <Copy className="h-3.5 w-3.5" /> Copy ID
-                </button>
-              </div>
-              <p className="rounded-xl bg-surface px-4 py-3 text-center text-xs text-mist">
-                Save this ID — or just use your phone number on the Track Order page to find your
-                order anytime.
-              </p>
-
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between text-mist">
-                  <span>Items total</span>
-                  <span className="font-semibold text-ink">{formatINR(placed.itemsPrice)}</span>
-                </div>
-                <div className="flex justify-between text-mist">
-                  <span>Shipping</span>
-                  <span className="font-semibold text-ink">
-                    {placed.shippingPrice === 0 ? 'FREE' : formatINR(placed.shippingPrice)}
-                  </span>
-                </div>
-                <div className="flex justify-between border-t border-line pt-3 text-base font-extrabold text-ink">
-                  <span>Total paid</span>
-                  <span className="text-accent">{formatINR(placed.totalPrice)}</span>
-                </div>
-                <div className="flex justify-between text-mist">
-                  <span>Payment method</span>
-                  <span className="font-bold text-ink">{placed.paymentMethod}</span>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-3 pt-2">
-                <Link
-                  to="/track-order"
-                  className="flex items-center justify-center gap-2 rounded-xl border-2 border-accent px-4 py-3.5 text-sm font-bold text-accent transition hover:bg-accent hover:text-white"
-                >
-                  <Truck className="h-4 w-4" /> Track your order
-                </Link>
-                <Link
-                  to="/products"
-                  className="flex items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3.5 text-sm font-bold text-white shadow-md shadow-accent/20 transition hover:bg-accent-dark"
-                >
-                  Continue shopping <ArrowRight className="h-4 w-4" />
-                </Link>
-                <Link
-                  to="/"
-                  className="flex items-center justify-center gap-2 rounded-xl border border-line px-4 py-3.5 text-sm font-bold text-ink transition hover:border-accent/50 hover:text-accent"
-                >
-                  <ArrowLeft className="h-4 w-4" /> Back to home
-                </Link>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    )
   }
 
   if (pendingPayment) {
@@ -343,6 +326,13 @@ function Checkout() {
                   <span className="text-accent">{formatINR(pendingPayment.order.totalPrice)}</span>
                 </div>
               </div>
+
+              {error && (
+                <p className="rounded-xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-600">
+                  {error}
+                </p>
+              )}
+
               <button
                 type="button"
                 disabled={busy}
@@ -352,6 +342,14 @@ function Checkout() {
                 <Lock className="h-4 w-4" />
                 {busy ? 'Opening payment...' : 'Pay now'}
               </button>
+
+              <Link
+                to="/track-order"
+                className="flex items-center justify-center gap-2 rounded-xl border border-line px-4 py-3 text-sm font-bold text-ink transition hover:border-accent/50 hover:text-accent"
+              >
+                <Truck className="h-4 w-4" /> Pay later — track my order
+              </Link>
+
               <p className="mt-2 flex items-center justify-center gap-1.5 text-center text-xs text-mist">
                 <ShieldCheck className="h-4 w-4 text-accent" />
                 100% secure checkout · Discreet packaging

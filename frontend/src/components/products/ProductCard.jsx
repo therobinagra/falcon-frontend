@@ -1,7 +1,7 @@
 import { Heart, Eye, Star, ShoppingCart } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../../context/cartContext'
-import { productIcon, formatINR } from '../../utils'
+import { productIcon, formatINR, isOutOfStock } from '../../utils'
 
 function discountPercent(price, mrp) {
   return Math.round(((mrp - price) / mrp) * 100)
@@ -12,6 +12,7 @@ function ProductCard({ product, onQuickView }) {
   const navigate = useNavigate()
   const discount = discountPercent(product.price, product.mrp)
   const wished = wishlist.includes(product._id)
+  const outOfStock = isOutOfStock(product)
 
   return (
     <article className="group relative flex flex-col overflow-hidden rounded-3xl border border-line bg-white shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-lux">
@@ -30,9 +31,15 @@ function ProductCard({ product, onQuickView }) {
           </div>
         )}
 
-        <span className="absolute left-4 top-4 rounded-full bg-accent px-3 py-1 text-[11px] font-bold text-white shadow-md">
-          {discount}% OFF
-        </span>
+        {outOfStock ? (
+          <span className="absolute left-4 top-4 rounded-full bg-red-600 px-3 py-1 text-[11px] font-bold text-white shadow-md">
+            Out of stock
+          </span>
+        ) : (
+          <span className="absolute left-4 top-4 rounded-full bg-accent px-3 py-1 text-[11px] font-bold text-white shadow-md">
+            {discount}% OFF
+          </span>
+        )}
 
         <button
           onClick={() => toggleWishlist(product._id)}
@@ -89,13 +96,19 @@ function ProductCard({ product, onQuickView }) {
             <p className="text-xl font-extrabold text-ink">{formatINR(product.price)}</p>
             <p className="text-sm text-mist line-through">{formatINR(product.mrp)}</p>
           </div>
-          <button
-            onClick={() => addItem(product)}
-            className="flex items-center gap-2 rounded-full bg-accent px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-accent/20 transition hover:bg-accent-dark"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            Add
-          </button>
+          {outOfStock ? (
+            <span className="flex cursor-not-allowed items-center gap-2 rounded-full bg-mist/20 px-4 py-2.5 text-sm font-bold text-mist">
+              Out of stock
+            </span>
+          ) : (
+            <button
+              onClick={() => addItem(product)}
+              className="flex items-center gap-2 rounded-full bg-accent px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-accent/20 transition hover:bg-accent-dark"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              Add
+            </button>
+          )}
         </div>
       </div>
     </article>

@@ -14,7 +14,7 @@ import {
 } from 'lucide-react'
 import { useCachedList } from '../api'
 import { useCart } from '../context/cartContext'
-import { formatINR } from '../utils'
+import { formatINR, isOutOfStock } from '../utils'
 import QuickViewModal from '../components/products/QuickViewModal'
 import FadeIn from '../components/ui/FadeIn'
 
@@ -48,6 +48,8 @@ function ProductPage() {
 
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100)
   const wished = wishlist.includes(product._id)
+  const outOfStock = isOutOfStock(product)
+  const maxQty = outOfStock ? 1 : product.stock || 99
 
   const perks = [
     { icon: Truck, label: 'Free delivery over ₹499' },
@@ -127,6 +129,11 @@ function ProductPage() {
                 <span className="mb-1 rounded-full bg-red-50 px-3 py-1 text-xs font-extrabold text-red-600">
                   {discount}% OFF
                 </span>
+                {outOfStock && (
+                  <span className="mb-1 rounded-full bg-red-600 px-3 py-1 text-xs font-extrabold text-white">
+                    Out of stock
+                  </span>
+                )}
               </div>
 
               <p className="mt-6 leading-relaxed text-mist">{product.description}</p>
@@ -154,21 +161,33 @@ function ProductPage() {
                   </button>
                   <span className="w-10 text-center text-lg font-extrabold text-ink">{qty}</span>
                   <button
-                    onClick={() => setQty((q) => q + 1)}
+                    onClick={() => setQty((q) => Math.min(maxQty, q + 1))}
                     aria-label="Increase quantity"
                     className="flex h-12 w-12 items-center justify-center text-ink transition hover:text-accent"
                   >
                     <Plus className="h-4 w-4" />
                   </button>
                 </div>
-                <button
-                  onClick={() => addItem(product, qty)}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-full bg-accent px-8 py-4 text-sm font-bold text-white shadow-lg shadow-accent/25 transition hover:bg-accent-dark sm:flex-none"
-                >
-                  <ShoppingCart className="h-5 w-5" />
-                  Add to Cart — {formatINR(product.price * qty)}
-                </button>
+                {outOfStock ? (
+                  <span className="flex flex-1 cursor-not-allowed items-center justify-center gap-2 rounded-full bg-mist/20 px-8 py-4 text-sm font-bold text-mist sm:flex-none">
+                    Out of stock
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => addItem(product, qty)}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-full bg-accent px-8 py-4 text-sm font-bold text-white shadow-lg shadow-accent/25 transition hover:bg-accent-dark sm:flex-none"
+                  >
+                    <ShoppingCart className="h-5 w-5" />
+                    Add to Cart — {formatINR(product.price * qty)}
+                  </button>
+                )}
               </div>
+
+              {outOfStock && (
+                <p className="mt-3 text-sm font-semibold text-red-600">
+                  This product is currently out of stock. Check back soon.
+                </p>
+              )}
 
               <div className="mt-8 grid gap-3 sm:grid-cols-3">
                 {perks.map((perk) => (

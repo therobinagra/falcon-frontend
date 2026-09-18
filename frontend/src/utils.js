@@ -15,3 +15,10 @@ export function productIcon(name) {
 export function formatINR(amount) {
   return `₹${amount.toLocaleString('en-IN')}`
 }
+
+export function isOutOfStock(product) {
+  if (!product) return false
+  if (product.inStock === false) return true
+  if (typeof product.stock === 'number' && product.stock <= 0) return true
+  return false
+}

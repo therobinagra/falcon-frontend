@@ -1,12 +1,13 @@
 import { X, ShoppingCart, Star, Check } from 'lucide-react'
 import { useCart } from '../../context/cartContext'
-import { productIcon, formatINR } from '../../utils'
+import { productIcon, formatINR, isOutOfStock } from '../../utils'
 
 function QuickViewModal({ product, onClose }) {
   const { addItem } = useCart()
 
   if (!product) return null
   const discount = Math.round(((product.mrp - product.price) / product.mrp) * 100)
+  const outOfStock = isOutOfStock(product)
 
   return (
     <div
@@ -81,13 +82,19 @@ function QuickViewModal({ product, onClose }) {
             ))}
           </ul>
 
-          <button
-            onClick={() => addItem(product)}
-            className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent py-4 text-sm font-bold text-white shadow-xl shadow-accent/25 transition hover:bg-accent-dark"
-          >
-            <ShoppingCart className="h-4 w-4" />
-            Add to Cart — {formatINR(product.price)}
-          </button>
+          {outOfStock ? (
+            <div className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-red-50 py-4 text-sm font-bold text-red-600">
+              Out of stock
+            </div>
+          ) : (
+            <button
+              onClick={() => addItem(product)}
+              className="mt-6 flex w-full items-center justify-center gap-2 rounded-full bg-accent py-4 text-sm font-bold text-white shadow-xl shadow-accent/25 transition hover:bg-accent-dark"
+            >
+              <ShoppingCart className="h-4 w-4" />
+              Add to Cart — {formatINR(product.price)}
+            </button>
+          )}
         </div>
       </div>
     </div>
