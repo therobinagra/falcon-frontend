@@ -81,11 +81,11 @@ export const products = [
   },
   {
     _id: 'p11',
-    name: 'Amrit Urja Churan',
-    slug: 'amrit-urja-churan',
+    name: 'Shakti Vardhak Churan',
+    slug: 'shakti-vardhak-churan',
     tagline: 'Classic ayurvedic churan',
     description:
-      'Amrit Urja Churan is a classic ayurvedic churan made from time-tested natural herbs. Supports digestion, stamina and overall wellness the traditional way.',
+      'Shakti Vardhak Churan is a classic ayurvedic churan made from time-tested natural herbs. Supports digestion, stamina and overall wellness the traditional way.',
     category: 'Churan',
     price: 1499,
     mrp: 1999,

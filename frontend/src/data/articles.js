@@ -266,13 +266,13 @@ Ayurvedic tradition, herbal wellness and everyday self-care — all together in 
     category: 'Ayurveda & Herbal Wellness',
     date: 'Jul 5, 2026',
     readTime: '4 min read',
-    title: 'Amrit Urja Churan: Traditional Ayurvedic Wellness for Daily Balance',
-    desc: 'Amrit Urja Churan traditional Ayurvedic herbal preparation hai jo overall wellness, daily vitality aur balanced lifestyle ke saath include kiya ja sakta hai.',
+    title: 'Shakti Vardhak Churan: Traditional Ayurvedic Wellness for Daily Balance',
+    desc: 'Shakti Vardhak Churan traditional Ayurvedic herbal preparation hai jo overall wellness, daily vitality aur balanced lifestyle ke saath include kiya ja sakta hai.',
     body: `## Introduction
 
 Ayurveda mein Churan ek traditional herbal preparation hai, jisme different herbs aur natural ingredients ko blend karke daily wellness routine ka part banaya jata hai.
 
-Amrit Urja Churan traditional Ayurvedic approach se inspired herbal preparation hai, jise overall wellness, daily vitality aur balanced lifestyle ke saath include kiya ja sakta hai.
+Shakti Vardhak Churan traditional Ayurvedic approach se inspired herbal preparation hai, jise overall wellness, daily vitality aur balanced lifestyle ke saath include kiya ja sakta hai.
 
 ## Ayurvedic Herbal Approach
 
@@ -284,7 +284,7 @@ Ayurvedic wellness ka focus sirf ek product par nahi, balki balanced diet, prope
 
 Busy lifestyle mein apni daily routine ko balanced rakhna important hai. Nutritious food, sufficient water, proper sleep aur physical activity ke saath herbal wellness products ko responsibly use kiya ja sakta hai.
 
-Amrit Urja Churan ko adults apni Ayurvedic and herbal wellness routine ka part bana sakte hain.
+Shakti Vardhak Churan ko adults apni Ayurvedic and herbal wellness routine ka part bana sakte hain.
 
 ## Healthy Routine ke Saath
 
@@ -299,9 +299,9 @@ Daily wellbeing ke liye kuch simple habits helpful hain:
 
 Herbal products ko healthy lifestyle ka replacement nahi, balki complementary wellness option ke roop mein dekhna chahiye.
 
-## Amrit Urja Churan – Product Information
+## Shakti Vardhak Churan – Product Information
 
-- Product Name: Amrit Urja Churan
+- Product Name: Shakti Vardhak Churan
 - Type: Ayurvedic Herbal Preparation
 - Pack Size: 100 GM
 
@@ -313,7 +313,7 @@ Recommended quantity se zyada use na karein. Agar aap pregnant ya breastfeeding 
 
 ## Conclusion
 
-Amrit Urja Churan traditional Ayurvedic and herbal wellness ko daily lifestyle ke saath include karne ka ek option hai. Healthy diet, proper rest, exercise aur balanced routine ke saath ise apni everyday wellness journey ka part banaya ja sakta hai.
+Shakti Vardhak Churan traditional Ayurvedic and herbal wellness ko daily lifestyle ke saath include karne ka ek option hai. Healthy diet, proper rest, exercise aur balanced routine ke saath ise apni everyday wellness journey ka part banaya ja sakta hai.
 
 Traditional Ayurveda + herbal wellness + healthy lifestyle — ek balanced daily routine ki taraf simple approach.`,
     image: '/images/churan1.webp',
